@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄</title>
-    <updated>2020-04-15T15:17:30.060Z</updated>
+    <updated>2020-04-15T15:22:17.756Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -12,8 +12,8 @@
     <rights>All rights reserved 2020, 老黄</rights>
     <entry>
         <title type="html"><![CDATA[test]]></title>
-        <id>https://hkxtor.github.io/post/test/</id>
-        <link href="https://hkxtor.github.io/post/test/">
+        <id>https://hkxtor.github.io/test/</id>
+        <link href="https://hkxtor.github.io/test/">
         </link>
         <updated>2020-04-12T09:10:40.000Z</updated>
         <content type="html"><![CDATA[<h1 id="test">test</h1>
