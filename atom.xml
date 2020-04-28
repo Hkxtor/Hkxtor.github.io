@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄</title>
-    <updated>2020-04-16T08:36:16.821Z</updated>
+    <updated>2020-04-28T11:27:39.925Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -11,17 +11,51 @@
     <icon>https://hkxtor.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 老黄</rights>
     <entry>
-        <title type="html"><![CDATA[test]]></title>
-        <id>https://hkxtor.github.io/test/</id>
-        <link href="https://hkxtor.github.io/test/">
+        <title type="html"><![CDATA[MySQL自带的性能压力测试工具mysqlslap]]></title>
+        <id>https://hkxtor.github.io/DQakzE_dy/</id>
+        <link href="https://hkxtor.github.io/DQakzE_dy/">
         </link>
-        <updated>2020-04-12T09:10:40.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="test">test</h1>
-<p><em>test</em><br>
-<strong>test</strong></p>
-<blockquote>
-<p>test</p>
-</blockquote>
+        <updated>2020-04-28T10:30:07.000Z</updated>
+        <content type="html"><![CDATA[<pre><code>--only-print 只打印测试语句而不实际执行。
+--detach=N 执行N条语句后断开重连。
+
+# 单线程测试。测试做了什么。
+mysqlslap -a -uroot -p123456
+ 
+# 多线程测试。使用–concurrency来模拟并发连接。
+mysqlslap -a -c 100 -uroot -p123456
+ 
+# 迭代测试。用于需要多次执行测试得到平均值。
+mysqlslap -a -i 10 -uroot -p123456
+ 
+mysqlslap --auto-generate-sql-add-autoincrement -a -uroot -p123456
+mysqlslap -a --auto-generate-sql-load-type=mixed -uroot -p123456
+mysqlslap -a --auto-generate-sql-secondary-indexes=3 -uroot -p123456
+mysqlslap -a --auto-generate-sql-write-number=1000 -uroot -p123456
+mysqlslap --create-schema world -q &quot;select count(*) from City&quot; -uroot -p123456
+mysqlslap -a -e innodb -uroot -p123456
+mysqlslap -a --number-of-queries=10 -uroot -p123456
+ 
+# 测试同时不同的存储引擎的性能进行对比：
+mysqlslap -a --concurrency=50,100 --number-of-queries 1000 --iterations=5 --engine=myisam,innodb --debug-info -uroot -p123456
+ 
+# 500和1000个并发分别得到一次测试结果(Benchmark)，并发数越多，执行完所有查询的时间越长。为了准确起见，可以多测试几次:
+mysqlslap -a --concurrency=500,1000 --auto-generate-sql-add-autoincrement --auto-generate-sql-secondary-indexes=10 --number-of-queries 2000 --iterations=5
+
+Benchmark
+        Average number of seconds to run all queries: 1.551 seconds
+        Minimum number of seconds to run all queries: 1.441 seconds
+        Maximum number of seconds to run all queries: 1.716 seconds
+        Number of clients running queries: 500
+        Average number of queries per client: 4
+
+Benchmark
+        Average number of seconds to run all queries: 1.734 seconds
+        Minimum number of seconds to run all queries: 1.589 seconds
+        Maximum number of seconds to run all queries: 1.911 seconds
+        Number of clients running queries: 1000
+        Average number of queries per client: 2
+</code></pre>
 ]]></content>
     </entry>
 </feed>
