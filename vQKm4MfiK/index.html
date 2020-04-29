@@ -165,7 +165,7 @@
                     <article class="post-wrap">
                         <header class="post-header">
                             <h1 class="post-title">
-                                MySQL自带的性能压力测试工具mysqlslap
+                                如何判断数据库IO是否慢
                             </h1>
                             
                                 <!--en-->
@@ -175,17 +175,17 @@
                                         老黄的养生会所
                                     </a>
                                     <span class="post-time">
-                                Date: <a href="#">2020-04-28</a>
+                                Date: <a href="#">2017-10-24</a>
                             </span>
                                     <span class="post-readtime">Reading Time:<a
-                                    href="#">1.8
+                                    href="#">8.2
                                     mins</a></span>
-                                    <span class="post-words">words:<a href="#">353</a></span>
+                                    <span class="post-words">words:<a href="#">2115</a></span>
                                     
                                         <span class="post-category">
                                 Category:
                                 
-                                <a href="https://hkxtor.github.io/3LgO6i0X_/">mysql</a>
+                                <a href="https://hkxtor.github.io/UhtfwpcK7/">oracle</a>
                                 
                             </span>
                                         
@@ -196,51 +196,192 @@
                                 
                         </header>
                         <div class="post-content">
-                            <pre><code>--only-print 只打印测试语句而不实际执行。
---detach=N 执行N条语句后断开重连。
-
-# 单线程测试。测试做了什么。
-mysqlslap -a -uroot -p123456
- 
-# 多线程测试。使用–concurrency来模拟并发连接。
-mysqlslap -a -c 100 -uroot -p123456
- 
-# 迭代测试。用于需要多次执行测试得到平均值。
-mysqlslap -a -i 10 -uroot -p123456
- 
-mysqlslap --auto-generate-sql-add-autoincrement -a -uroot -p123456
-mysqlslap -a --auto-generate-sql-load-type=mixed -uroot -p123456
-mysqlslap -a --auto-generate-sql-secondary-indexes=3 -uroot -p123456
-mysqlslap -a --auto-generate-sql-write-number=1000 -uroot -p123456
-mysqlslap --create-schema world -q &quot;select count(*) from City&quot; -uroot -p123456
-mysqlslap -a -e innodb -uroot -p123456
-mysqlslap -a --number-of-queries=10 -uroot -p123456
- 
-# 测试同时不同的存储引擎的性能进行对比：
-mysqlslap -a --concurrency=50,100 --number-of-queries 1000 --iterations=5 --engine=myisam,innodb --debug-info -uroot -p123456
- 
-# 500和1000个并发分别得到一次测试结果(Benchmark)，并发数越多，执行完所有查询的时间越长。为了准确起见，可以多测试几次:
-mysqlslap -a --concurrency=500,1000 --auto-generate-sql-add-autoincrement --auto-generate-sql-secondary-indexes=10 --number-of-queries 2000 --iterations=5
-
-Benchmark
-        Average number of seconds to run all queries: 1.551 seconds
-        Minimum number of seconds to run all queries: 1.441 seconds
-        Maximum number of seconds to run all queries: 1.716 seconds
-        Number of clients running queries: 500
-        Average number of queries per client: 4
-
-Benchmark
-        Average number of seconds to run all queries: 1.734 seconds
-        Minimum number of seconds to run all queries: 1.589 seconds
-        Maximum number of seconds to run all queries: 1.911 seconds
-        Number of clients running queries: 1000
-        Average number of queries per client: 2
+                            <h1 id="1-引言">1. 引言</h1>
+<pre><code>一个项目的数据库响应慢的问题，结论就是操作系统层面上的IO性能差的问题，怎么样才能更有说服力。
+我们一般衡量IO性能主要用两种指标来衡量。
+响应时间：用微秒来测量完成一项操作所需的时间，这个一般由oracle来采集统计。
+吞吐量：以每个单位时间内完成的操作数量来测量。这个一般通过操作系统下的工具来统计，例如iostat。
+本文主要是阐述如何从oracle的角度来确定IO是否慢，不再详细说明吞吐量及其测量方法。
 </code></pre>
+<h1 id="2-怎么才算io慢">2. 怎么才算IO“慢”</h1>
+<pre><code>IO慢是一个很主观的术语，它更多的取决于用户对系统和硬件的预期和实际的差异，这个差异是一个比较主观的感觉，量化到具体性能指标来看，在企业级平台下，当IO请求的响应时间大于10ms时，用户会开始敏感。不过响应时间是会不断变化的，有可能是数据从文件系统迁移到共享存储上，也可能是存储设备出现异常，又或者是业务增长导致的IO性能达到峰值。这就需要通过对响应时间这个指标作出作出多维度的测量。
+</code></pre>
+<h1 id="3-响应时间">3. 响应时间</h1>
+<pre><code>硬件不必对于每个IO请求都有相同的反映。总会有可能出现高峰和低谷。因此使用平均值是一种测量响应时间的通用方法。
+注意：为了减缓这种高峰/低谷的异常场景带来的问题，样例数据量需要比较大。样例数据量应该至少是每小时1000次操作，目的就是为了提供给决测更可信和实用的依据。
+</code></pre>
+<ol>
+<li>
+<p>IO的类型</p>
+<p>平均响应时间直接关联到具体的IO类型：</p>
+<ol>
+<li>读或写</li>
+<li>单块或多块<pre><code>单块IO，指一次只读一个块。例如，当一个session等待一个单块IO时，典型的等待事件就是“db file sequential read”，表明正在等待需要的块。
+多块读指的是一次读多个块，从2到128个Oracle块不等，依赖于块的大小与操作系统设置。通常一个多块请求容量上有1MB的限制。例如当一个session等待一次多块IO时，典型的等待事件就是“db file scattered read”，表明正在等待需要的块。
+</code></pre>
+</li>
+<li>同步或异步<pre><code>同步(阻塞)操作等待硬件完成物理IO，完成后能得到通知，合理地管理操作的成功或失败(成功读的情况下可以接收结果)。当需要等待系统调用结果的时候，进程的执行是被堵塞的。
+对于异步(非阻塞)操作，一旦IO请求传递到硬件，或放入操作系统的队列中(典型的情况是物理IO开始之前)，系统调用会立即返回。进程的执行不会被堵塞，因为它不需要等待系统调用的结果。它能继续执行，当IO操作有结果时再接收。
+</code></pre>
+</li>
+</ol>
+</li>
+<li>
+<p>响应时间的阈值</p>
+<p>一次典型的多块同步读64x 8k(总计512KB)的平均时间应该在未出现IO变慢的情况下大约是20毫秒左右。小请求应该更快(10-20毫秒)，大请求的消耗时间应该不多于25毫秒。异步操作应该至少和同步操作一样快，甚至还要更快。单块读至少应该和多块读一样快，甚至还要更快。“log file parallel write”，“control file write”和“direct path writes“等待时间应该不多于15毫秒。数据文件写的测量不像读那样简单。DBWR以批量的方式(&quot;db file parallel write&quot;)异步写入块，现在还没有写操作响应时间的标准。如果DBWR(多块或单块，带或不带IO salves)足够快速能够清理脏块，那么其他的等待事件和统计信息就会显露出来。作为规则，超过上述等待事件时间的等待事件都应该详细分析，当对比之前的时间消耗，有明显变化时更需要知晓。</p>
+<h4 id="注意当系统低于这些最大阈值的时候并不意味着没有其他的调优方法">注意：当系统低于这些最大阈值的时候，并不意味着没有其他的调优方法。</h4>
+<p>响应时间因系统而有所不同。例如，接下来的几项内容可以看做是正常平均值：</p>
+<ol>
+<li>多块同步读时间是10毫秒。</li>
+<li>单块同步读时间是5毫秒。</li>
+<li>'log file parallel write'时间是3毫秒。</li>
+</ol>
+<p><em><strong>以上是基于多块IO比单块IO需要更多的IO子系统资源的前提。如果接受这些建议，redo日志最好放在最快的磁盘，并且没有其它并发活动的争用。</strong></em></p>
+<p>以下是各IO相关等待事件的响应时间阈值：</p>
+<table>
+<thead>
+<tr>
+<th>Wait Event</th>
+<th style="text-align:right">R/W</th>
+<th>Synchronous/ Asynchronous</th>
+<th>Singleblock/ Multiblock</th>
+<th>Elapsed Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>control file parallel write</td>
+<td style="text-align:right">Write</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 15ms</td>
+</tr>
+<tr>
+<td>control file sequential read</td>
+<td style="text-align:right">Read</td>
+<td>Synchronous</td>
+<td>Single</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>db file parallel read</td>
+<td style="text-align:right">Read</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>db file scattered read</td>
+<td style="text-align:right">Read</td>
+<td>Synchronous</td>
+<td>Multi</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>db file sequential read</td>
+<td style="text-align:right">Read</td>
+<td>Synchronous</td>
+<td>Single</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>direct path read</td>
+<td style="text-align:right">Read</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>direct path read temp</td>
+<td style="text-align:right">Read</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 20 ms</td>
+</tr>
+<tr>
+<td>direct path write</td>
+<td style="text-align:right">Write</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 15 ms</td>
+</tr>
+<tr>
+<td>direct path write temp</td>
+<td style="text-align:right">Write</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 15 ms</td>
+</tr>
+<tr>
+<td>log file parallel write</td>
+<td style="text-align:right">Write</td>
+<td>Asynchronous</td>
+<td>Multi</td>
+<td>&lt; 15 ms</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>确定响应时间的途径</p>
+<ol>
+<li>
+<p>10046 trace file</p>
+<pre><code>当在10046 trace中使用level 8或12时，会包含相关的等待事件的信息，响应时间是ela字段，单位是微秒。
+WAIT #5: nam='cell single block physical read' ela= 672 cellhash#=2520626383 diskhash#=1377492511 bytes=16384 obj#=63 tim=1280416903276618
+&gt;&gt; 672 microseconds = 0.672 ms
+WAIT #5: nam='db file sequential read' ela= 1018 file#=2 block#=558091 blocks=1 obj#=0 tim=10191852599110
+&gt;&gt; 1018 microseconds =&gt; 1.018 ms
+</code></pre>
+</li>
+<li>
+<p>System State Dump</p>
+<pre><code>对于每个系统级的进程，等待信息包括在进程信息中。通常显示一个活动的waiting for，或者等待完成，进程正在CPU中执行waited for/last wait for。
+其中waiting for表示进程处于等待状态。11g之前可以查看seconds since wait started字段，显示进程已经等待多久了。从11gR1开始，”total“字段显示等待的时间。 如果waiting for显示一个进程正在等待一个IO相关的操作，seconds since wait started&gt;0，表示可能IO丢失，session处于hang状态。(因为之前提到过平均可接受时间是20毫秒，任何IO等待时间超过1秒都需要关注)。
+last wait for是与11g之前的版本相关的，表明进程不在等待(例如正在使用CPU)。等待时间记录到”wait_time“字段。(11g中wait_time被not in wait替代)
+
+last wait for 'db file sequential read' blocking sess=0x0 seq=100 wait_time=2264 seconds since wait started=0 file#=45, block#=17a57, blocks=1
+&gt;&gt; 2264 microseconds =&gt; 2.264 ms
+
+waited for表示session不在等待。通常是11gR1以后的系统级trace中使用。total字段表示等待的总时间。
+0: waited for 'db file sequential read' file#=9, block#=46526, blocks=1
+wait_id=179 seq_num=180 snap_id=1
+wait times: snap=0.007039 sec, exc=0.007039 sec, total=0.007039 sec
+wait times: max=infinite
+wait counts: calls=0 os=0
+&gt;&gt; 0.007039 sec =&gt; 7.039 ms
+</code></pre>
+</li>
+<li>
+<p>Statspack 与AWR reports</p>
+<p>前台进程和后台进程的等待事件，平均响应时间通过Wait Avg(ms)反映(以毫秒计算的平均读)。<br>
+<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/20200429135701.png" alt="" loading="lazy"><br>
+<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429140538.png" alt="" loading="lazy"></p>
+<p>表空间IO<br>
+平均响应时间通过Av Rd (ms)反映(以毫秒计算的平均读)。<br>
+<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429140822.png" alt="" loading="lazy"></p>
+<p>等待事件直方图可以提供组成这些平均值的写操作时间分布。他会展示出所有写操作都接近于平均值，还是会有若干波峰或波谷的情况。每列都表明每个bucket之间等待事件时间分布的百分比。例如，&lt;16ms的等待大于&lt;8ms。只要最大的百分比是从&lt;1ms到16ms的范围内，那么IO性能通常就可以接受。<br>
+<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429141013.png" alt="" loading="lazy"></p>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="4-总结">4. 总结</h1>
+<pre><code>本文的目标不是为了排查IO变慢的原因，而是为了如何寻找判定IO慢的证据。如果性能变差，那么IO慢可能成为性能问题的一个潜在原因，需要从数据库角度来分析如何采集支持的证据；如果潜在原因是由于操作系统级别的IO慢，那么负责IO子系统工程师需要参与进来诊断和修复这个问题。</code></pre>
 
                         </div>
                         
                             <div class="post-toc">
-                                
+                                <ul class="markdownIt-TOC">
+<li><a href="#1-%E5%BC%95%E8%A8%80">1. 引言</a></li>
+<li><a href="#2-%E6%80%8E%E4%B9%88%E6%89%8D%E7%AE%97io%E6%85%A2">2. 怎么才算IO“慢”</a></li>
+<li><a href="#3-%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4">3. 响应时间</a><br>
+*<br>
+*<br>
+* <a href="#%E6%B3%A8%E6%84%8F%E5%BD%93%E7%B3%BB%E7%BB%9F%E4%BD%8E%E4%BA%8E%E8%BF%99%E4%BA%9B%E6%9C%80%E5%A4%A7%E9%98%88%E5%80%BC%E7%9A%84%E6%97%B6%E5%80%99%E5%B9%B6%E4%B8%8D%E6%84%8F%E5%91%B3%E7%9D%80%E6%B2%A1%E6%9C%89%E5%85%B6%E4%BB%96%E7%9A%84%E8%B0%83%E4%BC%98%E6%96%B9%E6%B3%95">注意：当系统低于这些最大阈值的时候，并不意味着没有其他的调优方法。</a></li>
+<li><a href="#4-%E6%80%BB%E7%BB%93">4. 总结</a></li>
+</ul>
+
                             </div>
                             
                                 
@@ -254,7 +395,7 @@ Benchmark
 
                                             <p class="copyright-item">
                                                 <span>Permalink:</span>
-                                                <span><a href="https://hkxtor.github.io/DQakzE_dy/">https://hkxtor.github.io/DQakzE_dy/</a></span>
+                                                <span><a href="https://hkxtor.github.io/vQKm4MfiK/">https://hkxtor.github.io/vQKm4MfiK/</a></span>
                                             </p>
 
                                             <p class="copyright-item">
@@ -269,9 +410,9 @@ Benchmark
                                                         <span style="margin-right:15px">
                                                     <i class="post-share"></i>
                                                     <span>Share:</span>
-                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/DQakzE_dy/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=qzone&title=MySQL自带的性能压力测试工具mysqlslap&pics=https://hkxtor.github.io/images/avatar.png?v=1588141651537&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=weibo&title=MySQL自带的性能压力测试工具mysqlslap + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1588141651537 "><i class="fa fa-weibo "></i></a>
+                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/vQKm4MfiK/"><i class="fa fa-qrcode"></i></a>
+                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/vQKm4MfiK/&sharesource=qzone&title=如何判断数据库IO是否慢&pics=https://hkxtor.github.io/images/avatar.png?v=1588141651537&summary="><i class="fa fa-qq"></i></a>
+                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/vQKm4MfiK/&sharesource=weibo&title=如何判断数据库IO是否慢 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1588141651537 "><i class="fa fa-weibo "></i></a>
                                                         
                                                                 </span>
                                                                 <!--en-->
@@ -281,8 +422,8 @@ Benchmark
                                                                         <span class="tag ">
                         
                         
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/">#
-                                                mysql
+                        <a href="https://hkxtor.github.io/UhtfwpcK7/">#
+                                                oracle
                                                     </a>
                                                     
                                                         
@@ -298,15 +439,11 @@ Benchmark
                                                                                 <!---->
                                                                                 <section class="post-nav">
                                                                                     
-                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/BwozcZWlU/">
-                                                                                            mysql无损/半同步复制
+                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/DQakzE_dy/">
+                                                                                            MySQL自带的性能压力测试工具mysqlslap
                                                                                         </a>
                                                                                         
                                                                                             
-                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/vQKm4MfiK/">
-                                                                                                    如何判断数据库IO是否慢
-                                                                                                </a>
-                                                                                                
                                                                                 </section>
                     </article>
                 </div>
