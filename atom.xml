@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-04-30T03:06:28.933Z</updated>
+    <updated>2020-04-30T08:44:18.258Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -350,13 +350,13 @@ Pluggable   database created.
 <li>
 <p>从NOCDB创建</p>
 <ol>
-<li>在目标CDB创建连接远程非CDB的dblink：</li>
-</ol>
+<li>
+<p>在目标CDB创建连接远程非CDB的dblink：</p>
 <pre><code>SQL&gt; create   public database link nocdb1 connect to system identified by   &quot;111111&quot; using 'nocdb1';
 
 Database link   created.
 </code></pre>
-<ol>
+</li>
 <li>
 <p>使用dblink远程创建</p>
 <pre><code>SQL&gt; CREATE   PLUGGABLE DATABASE pdb6 FROM nocdb1@nocdb1                                                            
