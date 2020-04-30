@@ -162,257 +162,33 @@
 </script>
             <div class="main">
                 <div class="container">
-                    <article class="post-wrap">
-                        <header class="post-header">
-                            <h1 class="post-title">
-                                mysql无损/半同步复制
-                            </h1>
+                    <div class="post-wrap archive">
+                        
                             
-                                <!--en-->
-                                <div class="post-meta en">
-                                    Author:
-                                    <a itemprop="author" rel="author" href="/">
-                                        老黄的养生会所
-                                    </a>
-                                    <span class="post-time">
-                                Date: <a href="#">2020-04-28</a>
-                            </span>
-                                    <span class="post-readtime">Reading Time:<a
-                                    href="#">2.2
-                                    mins</a></span>
-                                    <span class="post-words">words:<a href="#">381</a></span>
+                                <h3>
+                                    2017
+                                </h3>
+                                
                                     
-                                        <span class="post-category">
-                                Category:
-                                
-                                <a href="https://hkxtor.github.io/3LgO6i0X_/">mysql</a>
-                                
-                            </span>
+
+                                        <article class="archive-item">
+                                            <a class="archive-item-link" href="https://hkxtor.github.io/qulIB3Rk0/">
+                                                12c可插拔数据库的几种克隆迁移方法
+                                            </a>
+                                            <span class="archive-item-date">2017-11-30 </span>
+                                        </article>
                                         
-                                            Views:
-                                            <span data-hk-page="current"> - </span>
                                             
-                                </div>
-                                
-                        </header>
-                        <div class="post-content">
-                            <p>1.参数文件里加</p>
-<pre><code>plugin_dir=/usr/local/mysql/lib/plugin
-plugin_load = &quot;rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so&quot;
-loose_rpl_semi_sync_master_enabled = 1
-loose_rpl_semi_sync_slave_enabled = 1
-loose_rpl_semi_sync_master_timeout = 5000
-</code></pre>
-<p>2.主库准备步骤</p>
-<pre><code>grant replication slave, replication client on *.* to rep@'192.168.56.%' identified by '123456';
-flush privileges;
-mysql&gt; show master status;
-+------------+----------+--------------+------------------+----------------------------------------------+
-| File       | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set                            |
-+------------+----------+--------------+------------------+----------------------------------------------+
-| bin.000007 | 57566891 |              |                  | 35d3ad22-8862-11ea-97a1-080027bb5279:1-43998 |
-+------------+----------+--------------+------------------+----------------------------------------------+
-</code></pre>
-<p>3.备库准备步骤</p>
-<pre><code>change master to master_host='192.168.56.101',master_user='rep',master_password='123456',master_log_file='bin.000007', master_log_pos=57566891,master_port = 3306;
-</code></pre>
-<p>4.测试</p>
-<pre><code># 主库执行
-mysql&gt; show variables like '%rpl%';  
-+-------------------------------------------+------------+
-| Variable_name                             | Value      |
-+-------------------------------------------+------------+
-| rpl_semi_sync_master_enabled              | ON         |
-| rpl_semi_sync_master_timeout              | 5000       |
-| rpl_semi_sync_master_trace_level          | 32         |
-| rpl_semi_sync_master_wait_for_slave_count | 1          |
-| rpl_semi_sync_master_wait_no_slave        | ON         |
-| rpl_semi_sync_master_wait_point           | AFTER_SYNC |
-| rpl_semi_sync_slave_enabled               | ON         |
-| rpl_semi_sync_slave_trace_level           | 32         |
-| rpl_stop_slave_timeout                    | 31536000   |
-+-------------------------------------------+------------+
-9 rows in set (0.00 sec)
-
-mysql&gt; show global status like &quot;%rpl%&quot;;
-+--------------------------------------------+-------+
-| Variable_name                              | Value |
-+--------------------------------------------+-------+
-| Rpl_semi_sync_master_clients               | 1     |
-| Rpl_semi_sync_master_net_avg_wait_time     | 0     |
-| Rpl_semi_sync_master_net_wait_time         | 0     |
-| Rpl_semi_sync_master_net_waits             | 0     |
-| Rpl_semi_sync_master_no_times              | 1     |
-| Rpl_semi_sync_master_no_tx                 | 2     |
-| Rpl_semi_sync_master_status                | ON    |
-| Rpl_semi_sync_master_timefunc_failures     | 0     |
-| Rpl_semi_sync_master_tx_avg_wait_time      | 0     |
-| Rpl_semi_sync_master_tx_wait_time          | 0     |
-| Rpl_semi_sync_master_tx_waits              | 0     |
-| Rpl_semi_sync_master_wait_pos_backtraverse | 0     |
-| Rpl_semi_sync_master_wait_sessions         | 0     |
-| Rpl_semi_sync_master_yes_tx                | 0     |
-| Rpl_semi_sync_slave_status                 | OFF   |
-+--------------------------------------------+-------+
-15 rows in set (0.00 sec)
-
-# 从库执行
-mysql&gt; show global variables like '%semi%';
-+-------------------------------------------+------------+
-| Variable_name                             | Value      |
-+-------------------------------------------+------------+
-| rpl_semi_sync_master_enabled              | ON         |
-| rpl_semi_sync_master_timeout              | 5000       |
-| rpl_semi_sync_master_trace_level          | 32         |
-| rpl_semi_sync_master_wait_for_slave_count | 1          |
-| rpl_semi_sync_master_wait_no_slave        | ON         |
-| rpl_semi_sync_master_wait_point           | AFTER_SYNC |
-| rpl_semi_sync_slave_enabled               | ON         |
-| rpl_semi_sync_slave_trace_level           | 32         |
-+-------------------------------------------+------------+
-8 rows in set (0.00 sec)
-
-mysql&gt; stop slave io_thread;
-Query OK, 0 rows affected (0.00 sec)
-
-# 主库执行
-mysql&gt; show databases;
-+--------------------+
-| Database           |
-+--------------------+
-| information_schema |
-| mysql              |
-| performance_schema |
-| sys                |
-+--------------------+
-4 rows in set (0.00 sec)
-
-mysql&gt; create database test;
-Query OK, 1 row affected (5.00 sec) ---(rpl_semi_sync_master_timeout设置的5秒超时)
-
-mysql&gt; show global status like &quot;%rpl%&quot;;
-+--------------------------------------------+-------+
-| Variable_name                              | Value |
-+--------------------------------------------+-------+
-| Rpl_semi_sync_master_clients               | 0     |
-| Rpl_semi_sync_master_net_avg_wait_time     | 0     |
-| Rpl_semi_sync_master_net_wait_time         | 0     |
-| Rpl_semi_sync_master_net_waits             | 0     |
-| Rpl_semi_sync_master_no_times              | 2     |
-| Rpl_semi_sync_master_no_tx                 | 3     |
-| Rpl_semi_sync_master_status                | OFF   |
-| Rpl_semi_sync_master_timefunc_failures     | 0     |
-| Rpl_semi_sync_master_tx_avg_wait_time      | 0     |
-| Rpl_semi_sync_master_tx_wait_time          | 0     |
-| Rpl_semi_sync_master_tx_waits              | 0     |
-| Rpl_semi_sync_master_wait_pos_backtraverse | 0     |
-| Rpl_semi_sync_master_wait_sessions         | 0     |
-| Rpl_semi_sync_master_yes_tx                | 0     |
-| Rpl_semi_sync_slave_status                 | OFF   |
-+--------------------------------------------+-------+
-15 rows in set (0.00 sec)
-
-# 从库执行
-start slave io_thread;
-
-# 主库执行
-mysql&gt; show global status like &quot;%rpl%&quot;;
-+--------------------------------------------+-------+
-| Variable_name                              | Value |
-+--------------------------------------------+-------+
-| Rpl_semi_sync_master_clients               | 1     |
-| Rpl_semi_sync_master_net_avg_wait_time     | 0     |
-| Rpl_semi_sync_master_net_wait_time         | 0     |
-| Rpl_semi_sync_master_net_waits             | 1     |
-| Rpl_semi_sync_master_no_times              | 2     |
-| Rpl_semi_sync_master_no_tx                 | 3     |
-| Rpl_semi_sync_master_status                | ON    |
-| Rpl_semi_sync_master_timefunc_failures     | 0     |
-| Rpl_semi_sync_master_tx_avg_wait_time      | 0     |
-| Rpl_semi_sync_master_tx_wait_time          | 0     |
-| Rpl_semi_sync_master_tx_waits              | 0     |
-| Rpl_semi_sync_master_wait_pos_backtraverse | 0     |
-| Rpl_semi_sync_master_wait_sessions         | 0     |
-| Rpl_semi_sync_master_yes_tx                | 0     |
-| Rpl_semi_sync_slave_status                 | OFF   |
-+--------------------------------------------+-------+
-15 rows in set (0.00 sec)
-</code></pre>
-
-                        </div>
-                        
-                            <div class="post-toc">
-                                
-                            </div>
-                            
-                                
-                                    
-                                        <!--en-->
-                                        <section class="post-copyright en">
-                                            <p class="copyright-item">
-                                                <span>Author:</span>
-                                                <span>老黄的养生会所</span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>Permalink:</span>
-                                                <span><a href="https://hkxtor.github.io/BwozcZWlU/">https://hkxtor.github.io/BwozcZWlU/</a></span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>License:</span>
-                                                <span>MIT License</span>
-                                            </p>
-                                        </section>
-                                        
                                                 
-                                                    
-                                                        <!-- Share-->
-                                                        <span style="margin-right:15px">
-                                                    <i class="post-share"></i>
-                                                    <span>Share:</span>
-                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/BwozcZWlU/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/BwozcZWlU/&sharesource=qzone&title=mysql无损/半同步复制&pics=https://hkxtor.github.io/images/avatar.png?v=1588215979356&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/BwozcZWlU/&sharesource=weibo&title=mysql无损/半同步复制 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1588215979356 "><i class="fa fa-weibo "></i></a>
-                                                        
-                                                                </span>
-                                                                <!--en-->
-                                                                <section class="post-tags en ">
-                                                                    <div>
-                                                                        <span>Tag(s):</span>
-                                                                        <span class="tag ">
+                    </div>
+                    <div class="pagination-container">
                         
-                        
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/">#
-                                                mysql
-                                                    </a>
-                                                    
+                                                
                                                         
-                                                            </span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <a href="javascript:window.history.back();">back</a>
-                                                                        <span>&dot;</span>
-                                                                        <a href="#">home</a>
-                                                                    </div>
-                                                                </section>
                                                                 
-                                                                                <!---->
-                                                                                <section class="post-nav">
-                                                                                    
-                                                                                            
-                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/DQakzE_dy/">
-                                                                                                    MySQL自带的性能压力测试工具mysqlslap
-                                                                                                </a>
-                                                                                                
-                                                                                </section>
-                    </article>
+                    </div>
                 </div>
-                
-
             </div>
-    </div>
-    </div>
     </div>
     
     <div id="player"></div>
@@ -537,8 +313,5 @@ mysql&gt; show global status like &quot;%rpl%&quot;;
                 
         </div>
 </body>
-<script>
-    scroll();
-</script>
 
 </html>

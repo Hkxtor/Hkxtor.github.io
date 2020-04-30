@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-04-29T06:27:40.353Z</updated>
+    <updated>2020-04-30T03:06:28.933Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -206,6 +206,525 @@ Benchmark
         Number of clients running queries: 1000
         Average number of queries per client: 2
 </code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[12c可插拔数据库的几种克隆迁移方法]]></title>
+        <id>https://hkxtor.github.io/qulIB3Rk0/</id>
+        <link href="https://hkxtor.github.io/qulIB3Rk0/">
+        </link>
+        <updated>2017-11-30T03:03:34.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="oacle-多租户环境包含一个容器数据库cdb和零个或多个可插拔数据库pdb这种让数据库系统扩展也变得非常的灵活oracle-12c提供了许多种关于多租户模式下数据库的克隆迁移方式以下对于几种克隆迁移的方式进行实验介绍">Oacle 多租户环境包含一个容器数据库(CDB)和零个或多个可插拔数据库(PDB)，这种让数据库系统扩展也变得非常的灵活，oracle 12c提供了许多种关于多租户模式下数据库的克隆迁移方式，以下对于几种克隆迁移的方式进行实验介绍。</h3>
+<h1 id="一通过现有pdb直接创建create-pluggable-databasefrom">一．通过现有PDB直接创建（CREATE PLUGGABLE DATABASE..FROM..）</h1>
+<ol>
+<li>
+<p>从本地PDB创建</p>
+<ol>
+<li>
+<p>克隆完整PDB</p>
+<p>创建语句：</p>
+<pre><code class="language-sql">CREATE PLUGGABLE DATABASE pdb3 FROM pdb2
+    PATH_PREFIX = ' /u01/app/oracle/oradata/ ' --- 指定pdb相关联的目录，可以不设置
+    FILE_NAME_CON VERT = (' /u01/app/oracle/oradata/orclcwd/pdb2/',   '/u01/app/oracle/oradata/orclcwd/pdb3/' ) - - 数据文件存放路径，在ASM中可以指定DG
+    SERVICE_NAME_CONVERT = ('pdb2','pdb3') – 服务名转换
+    NOLOGGING;
+
+
+CREATE PLUGGABLE DATABASE pdb3 FROM pdb2
+    PATH_PREFIX = '/u01/app/oracle/oradata/'
+    FILE_NAME_CONVERT =   ('/u01/app/oracle/product/12.1.0/dbhome_1/dbs/u01/app/oracle/oradata/orclcwd/',   '/u01/app/oracle/oradata/orclcwd/pdb3/')
+    SERVICE_NAME_CONVERT = ('pdb2','pdb3');
+</code></pre>
+<p>主要的选项说明：</p>
+<p>PATH_PREFIX：将PDB的相对目录对象路径设置为特定目录。因此，需要设置PATH_PREFIX<br>
+FILE_NAME_CONVERT：指定数据文件的转换路径<br>
+Storage: 如果需要限制新建pdb的大小，可以使用storage=xxG 来限制。</p>
+<p>创建的过程日志：</p>
+<pre><code>CREATE PLUGGABLE DATABASE pdb3 FROM pdb2
+    PATH_PREFIX = '/u01/app/oracle/oradata/'
+    FILE_NAME_CONVERT =   ('/u01/app/oracle/product/12.1.0/dbhome_1/dbs/u01/app/oracle/oradata/orclcwd/',   '/u01/app/oracle/oradata/orclcwd/pdb3/')
+SERVICE_NAME_CONVERT = ('pdb2','pdb3') &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; 创建命令开始
+Fri Aug 18 14:22:11 2017
+Opatch XML is skipped for PDB PDB2 (conid=3) &lt;&lt;&lt;&lt;&lt; 跳过PDB2（源）Opatch   XML，看起来与版本检查有关
+APEX_040200.WWV_FLOW_ADVISOR_CHECKS   (CHECK_STATEMENT) - CLOB populated
+Fri Aug 18 14:24:15 2017 &lt;&lt;&lt;&lt; 开始创建新的PDB3，但此时的状态先为UNUSABLE
+****************************************************************
+Pluggable Database PDB3 with pdb id - 4 is   created as UNUSABLE.
+If any errors are encountered before the pdb   is marked as NEW,
+then the pdb must be dropped
+****************************************************************
+Database Characterset for PDB3 is ZHS16GBK &lt;&lt;&lt; 字符集检查
+Fri Aug 18 14:24:26 2017 &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt; 删除换旧的数据文件并生成新的数据文件
+Deleting old file#8 from file$
+Deleting old file#9 from file$
+Adding new file#11 to file$(old file#8)
+Adding new file#12 to file$(old file#9)
+Successfully created internal service pdb3 at   open &lt;&lt;&lt;&lt;&lt;&lt; 创建服务成功
+ALTER SYSTEM: Flushing buffer cache inst=0   container=4 local &lt;&lt;&lt;&lt;&lt; 刷新新PDB的buffer
+****************************************************************
+Post plug operations are now complete.  &lt;&lt;&lt;&lt;&lt; 插入PDB操作
+Pluggable database PDB3 with pdb id - 4 is   now marked as NEW. &lt;&lt;&lt;&lt;PDB 状态定位NEW
+****************************************************************
+Completed: CREATE PLUGGABLE DATABASE pdb3   FROM pdb2 &lt;&lt;&lt;&lt; 完成
+    PATH_PREFIX = '/u01/app/oracle/oradata/'
+    FILE_NAME_CONVERT =   ('/u01/app/oracle/product/12.1.0/dbhome_1/dbs/u01/app/oracle/oradata/orclcwd/',   '/u01/app/oracle/oradata/orclcwd/pdb3/')
+SERVICE_NAME_CONVERT = ('pdb2','pdb3')
+</code></pre>
+</li>
+<li>
+<p>仅克隆PDB元数据</p>
+<p>有时并不需要克隆表里的数据，可使用NO DATA来克隆一个PDB，但仅仅克隆元数据。</p>
+<p>以下示例：</p>
+<ol>
+<li>
+<p>源PDB中表存在多行数据，这里特意选择了三种情况，看看是否NO DATA的机制如何：</p>
+<ol>
+<li>SYS 用户的表，表空间在SYSTEM</li>
+<li>个人用户的表，表空间在SYSTEM</li>
+<li>个人用户的表，表空间在普通表空间</li>
+</ol>
+</li>
+<li>
+<p>将源PDB打开到read only模式下：</p>
+<pre><code>ALTER PLUGGABLE DATABASE pdb1 OPEN READ ONLY;
+</code></pre>
+</li>
+<li>
+<p>克隆PDB：</p>
+<pre><code>CREATE PLUGGABLE DATABASE pdb4 FROM pdb3 NO DATA  FILE_NAME_CONVERT = ('/u01/app/oracle/oradata/orclcwd/pdb3/', '/u01/app/oracle/oradata/orclcwd/pdb4/');
+
+SQL&gt; CREATE PLUGGABLE DATABASE   pdb4 FROM pdb3 NO DATA;
+CREATE PLUGGABLE DATABASE pdb4 FROM pdb3 NO   DATA
+                                            *
+ERROR at line 1:
+ORA-65016: FILE_NAME_CONVERT must be   specified
+
+SQL&gt; CREATE PLUGGABLE DATABASE pdb4 FROM pdb3 NO DATA
+    2    FILE_NAME_CONVERT = ('/u01/app/oracle/oradata/orclcwd/pdb3/','/u01/app/oracle/oradata/orclcwd/pdb4/');
+Pluggable database created.
+</code></pre>
+</li>
+<li>
+<p>打开新克隆的PDB：</p>
+<pre><code>ALTER PLUGGABLE DATABASE pdb4 OPEN;
+</code></pre>
+</li>
+<li>
+<p>到新的PDB下查询表数据：</p>
+<p>从查询结果来看，使用NO DATA的方式克隆PDB时，SYSTEM表空间下的表数据是会克隆过去，但用户表空间下表数据库就仅克隆了元数据。</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<p>从远程PDB或non-CDB创建</p>
+<p>通过远程方式创建克隆主要依靠的是dblink，因此需要源库和目标库之间网络保持畅通，而远处创建的方式和本地创建相差不大，远程模式可以增加从一个NON-CDB数据库克隆到CDB中。</p>
+<ol>
+<li>
+<p>从PDB创建</p>
+<ol>
+<li>
+<p>查看目标CDB当前情况：</p>
+</li>
+<li>
+<p>在目标CDB创建连接远程CDB的dblink：</p>
+<pre><code>SQL&gt; create   public database link cdb1 connect to system identified by &quot;111111&quot;   using 'cdb1';
+
+Database link   created.
+</code></pre>
+</li>
+<li>
+<p>使用dblink远程创建</p>
+<pre><code>SQL&gt;  CREATE PLUGGABLE DATABASE pdb5 FROM pdb4@cdb1
+2      FILE_NAME_CONVERT = ('/u01/app/oracle/oradata/orclcwd/pdb4/','/u01/app/oracle/oradata/orclcwd/pdb5/');
+
+Pluggable   database created.
+</code></pre>
+</li>
+<li>
+<p>完成创建：</p>
+</li>
+</ol>
+</li>
+<li>
+<p>从NOCDB创建</p>
+<ol>
+<li>在目标CDB创建连接远程非CDB的dblink：</li>
+</ol>
+<pre><code>SQL&gt; create   public database link nocdb1 connect to system identified by   &quot;111111&quot; using 'nocdb1';
+
+Database link   created.
+</code></pre>
+<ol>
+<li>
+<p>使用dblink远程创建</p>
+<pre><code>SQL&gt; CREATE   PLUGGABLE DATABASE pdb6 FROM nocdb1@nocdb1                                                            
+2      FILE_NAME_CONVERT = ('/u01/app/oracle/oradata/nocdb1/','/u01/app/oracle/oradata/orclcwd/pdb6/');
+
+Pluggable   database created.
+</code></pre>
+</li>
+<li>
+<p>创建完成</p>
+</li>
+<li>
+<p>执行PDB转换脚本</p>
+<pre><code>SQL&gt; alter   session set container=pdb6;
+SQL&gt;   @?/rdbms/admin/ noncdb_to_pdb.sql
+</code></pre>
+</li>
+<li>
+<p>Plug 过程的一些问题：</p>
+<p>通过PDB_PLUG_IN_VIOLATIONS视图可以查询plug过程中的问题，例如以下，源PDB和当前CDB的字符集不同导致PDB open 后是限制模式，这个可以通过 ALTER DATABASE CHARACTER SET internal_use ZHS16GBK; 更改，如果在 实际应 用中就要事先注意 检查 字符集是否相同。</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="二通过插拔方式创建create-pluggable-databaseusing-xml">二.通过插拔方式创建（CREATE PLUGGABLE DATABASE..USING ‘XML’..）</h1>
+<pre><code>插拔的方式，是将一个PDB从CDB中拔出，之后插入到另外一个CDB的过程，一个拔掉的 PDB 由描述 PDB 的 XML 文件和其相关数据文件 组 成。
+</code></pre>
+<ol>
+<li>
+<p>从PDB插拔</p>
+<ol>
+<li>
+<p>选择准备拔出的 PDB ，这里选择 PDB4.</p>
+</li>
+<li>
+<p>关闭 PDB</p>
+</li>
+<li>
+<p>生成PDB的描述XML文件</p>
+<pre><code class="language-sql">ALTER PLUGGABLE DATABASE PDB4 UNPLUG INTO '/home/oracle/PDB4.xml';
+</code></pre>
+</li>
+<li>
+<p>将PDB4的文件传输到目标库相同路径下：</p>
+</li>
+<li>
+<p>将生成的XML文件传输到目标库</p>
+</li>
+<li>
+<p>执行DBMS_PDB.CHECK_PLUG_COMPATIBILITY 检查要插入PDB是否和目标CDB兼容。</p>
+<pre><code class="language-sql">SET SERVEROUTPUT ON
+DECLARE
+    compatible CONSTANT VARCHAR2(3) :=
+    CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(
+        pdb_descr_file =&gt;   '/home/oracle/PDB4.xml')
+    WHEN TRUE THEN 'YES'
+    ELSE 'NO'
+END;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(compatible);
+END;
+/
+
+SQL&gt;   SET SERVEROUTPUT ON
+SQL&gt;   DECLARE
+    2     compatible CONSTANT VARCHAR2(3) :=
+    3      CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(
+    4          pdb_descr_file =&gt; '/home/oracle/PDB4.xml')
+    5      WHEN TRUE THEN 'YES'
+    6      ELSE 'NO'
+    7    END;
+    8    BEGIN
+    9     DBMS_OUTPUT.PUT_LINE(compatible);
+    10    END;
+    11  /
+
+NO  &lt;&lt;&lt;&lt; 检查不通过 ，原来出现字符集不同
+
+SQL&gt;   ALTER SYSTEM ENABLE RESTRICTED SESSION;  
+System altered.
+
+SQL&gt; ALTER DATABASE CHARACTER SET internal_use ZHS16GBK;
+Database altered.
+
+SQL&gt;   SET SERVEROUTPUT ON
+SQL&gt;   DECLARE
+    2     compatible CONSTANT VARCHAR2(3) :=
+    3      CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(
+    4          pdb_descr_file =&gt; '/home/oracle/PDB4.xml')
+    5      WHEN TRUE THEN 'YES'
+    6      ELSE 'NO'
+    7    END;
+    8    BEGIN
+    9     DBMS_OUTPUT.PUT_LINE(compatible);
+    10    END;
+    11  /
+
+YES &lt;&lt;&lt;&lt; 检查 通 过
+PL/SQL procedure successfully completed.
+</code></pre>
+<p>对于插入一个PDB，必须满足以下条件：</p>
+<pre><code>  目标CDB必须与源CDB具有相同的字节码（主要涉及平台问题） 。
+  CDB必须安装相同的选项 。
+  源CDB和目标CDB必须具有兼容的字符集和国家字符集。
+</code></pre>
+</li>
+<li>
+<p>使用XML元数据文件把PDB插入（克隆模式）</p>
+<pre><code class="language-sql">create pluggable database MYPDB3 AS CLONE using '/home/oracle/PDB4.xml' NOCOPY TEMPFILE REUSE;
+</code></pre>
+<p>这里使用NOCOPY是因为将目标库数据文件路径设成了与源库相同。<br>
+打开新的插入的PDB,但出现错误</p>
+<pre><code class="language-sql">SQL&gt; !oerr ora 65054
+65054, 00000, &quot;Cannot   open a pluggable database in the desired mode.&quot;
+// *Cause:  An attempt was made to open a pluggable   database in a mode
+//          incompatible with that of the CDB.
+// *Action: Open the CDB   in a compatible mode first and retry the operation.
+</code></pre>
+<p>看起来是新的PDB和CDB OPEN时不兼容，这里我尝试重启整个CDB后竟然可以顺利打开新插入的PDB了。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>从 NON-CDB 插拔</p>
+<p>从NON-CDB转换克隆的模式实际与从CDB相差不大，与从现有NOCDB创建的模式一样，这里也需要执行noncdb_to_pdb.sql脚本来转换数据字典等。</p>
+<p>以下列举出执行的语句：</p>
+<ol>
+<li>
+<p>关闭原NONCDB数据库,并开启到只读模式</p>
+<pre><code class="language-sql">sqlplus / as sysdba
+sql&gt; shutdown immediate
+sql&gt; startup open read only
+</code></pre>
+</li>
+<li>
+<p>生成数据库的XML元数据文件。</p>
+<pre><code class="language-sql">BEGIN
+DBMS_PDB.DESCRIBE(pdb_descr_file   =&gt; '/home/oracle/12cNonPDB.xml');
+END;
+/
+</code></pre>
+</li>
+<li>
+<p>关闭数据库<br>
+sql&gt; shutdown immediate</p>
+</li>
+<li>
+<p>同样将原数据库文件传输到新数据库磁盘中。</p>
+</li>
+<li>
+<p>检查兼容性</p>
+<pre><code class="language-sql">SET SERVEROUTPUT ON;
+DECLARE
+compatible CONSTANT VARCHAR2(3) := CASE DBMS_PDB.CHECK_PLUG_COMPATIBILITY(pdb_descr_file =&gt; '/home/oracle/12cNonPDB.xml')
+WHEN TRUE THEN 'YES'
+ELSE 'NO'
+END;
+BEGIN
+DBMS_OUTPUT.PUT_LINE(compatible);
+END;
+/
+</code></pre>
+</li>
+<li>
+<p>检查是否有错误</p>
+<pre><code class="language-sql">col cause for a20
+col name for a20
+col message for a35 word_wrapped
+select name,cause,type,message,status from PDB_PLUG_IN_VIOLATIONS where name='&lt;noncdb database name&gt;';
+</code></pre>
+</li>
+<li>
+<p>创建PDB</p>
+<pre><code class="language-sql">CREATE PLUGGABLE DATABASE PDB8   USING ' /home/oracle/12cNonPDB.xml'
+COPY
+FILE_NAME_CONVERT = ('/u01/app/oracle/12c/oradata/12cNonPDB/','/u01/app/oracle/oradata/12c/PDB8/');
+</code></pre>
+</li>
+<li>
+<p>执行转换脚本</p>
+<pre><code class="language-sql">sql&gt; ALTER SESSION SET CONTAINER= PDB8;
+sql&gt; @$ORACLE_HOME/rdbms/admin/noncdb_to_pdb.sql
+</code></pre>
+</li>
+<li>
+<p>打开新的PDB</p>
+<pre><code class="language-sql">ALTER PLUGGABLE DATABASE PDB8 OPEN;
+</code></pre>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="三通过rman备份恢复">三．通过RMAN备份恢复</h1>
+<ol>
+<li>
+<p>整体数据库备份恢复</p>
+<p>有时可能需要迁移的仅仅是其中某几个PDB，在整库数据量不大情况下，可以直接备份整库来异机恢复即可，这样和普通的的数据库模式是相同的。</p>
+<ol>
+<li>
+<p>整库备份</p>
+<pre><code class="language-sql">run{
+allocate channel CH1 device type disk format  '/home/oracle/backup/full_db_%U';
+backup database include current controlfile plus   archivelog  ;
+release channel CH1 ;
+}
+BACKUP current controlfile  format '/home/oracle/backup/control_%d_%T_%u.ctl';
+</code></pre>
+</li>
+<li>
+<p>传输备份片到目标库</p>
+<pre><code>[oracle@redhat1 ~]$ pwd
+/home/oracle
+[oracle@redhat1 ~]$  scp -r backup 172.16.155.67:/home/oracle/
+</code></pre>
+</li>
+<li>
+<p>恢复控制文件</p>
+<pre><code class="language-sql">Startup nomout
+restore controlfile from '/home/oracle/backup/control_ORCLCWD_20170819_1esc91u4.ctl';
+alter database mount;
+</code></pre>
+</li>
+<li>
+<p>恢复全库</p>
+<pre><code>run{
+allocate channel CH1;
+restore database ;
+recover database;
+release channel CH1 ;
+}
+
+alter database open resetlogs;
+</code></pre>
+</li>
+</ol>
+</li>
+<li>
+<p>只恢复CDB、pdb$seed和需要的PDB</p>
+<ol>
+<li>
+<p>备份数据库</p>
+<p>这里使用上一步骤的全库备份，这里有个问题，就是我只需要恢复其中某一个PDB，那么，是否可以直接备份root database ,种子pdb 和所要的pdb来单独恢复，这个在后面进行详细实验。</p>
+</li>
+<li>
+<p>创建参数文件.</p>
+<p>这个不做说明</p>
+</li>
+<li>
+<p>恢复控制文件</p>
+<pre><code class="language-sql">startup nomout
+restore controlfile from '/home/oracle/backup/control_ORCLCWD_20170819_1esc91u4.ctl';
+alter database mount;
+</code></pre>
+</li>
+<li>
+<p>恢复所需要的 CDB$ROOT,PDB$SEED和PDB4</p>
+<pre><code>run{
+ALLOCATE   CHANNEL c1 TYPE disk;
+restore database root ;  -------------------------&gt;CDB$ROOT
+restore database &quot;PDB$SEED&quot;;   --------&gt;PDB$SEED is required
+restore database PDB4; --------------&gt;PDB   we want to restore
+RELEASE CHANNEL c1;
+}
+
+如果源库和目标库的数据文件路径不同，这使用set new name方式来更改文件路径。
+</code></pre>
+</li>
+<li>
+<p>跳过不需要的PDB的表空间来做recover.</p>
+<pre><code class="language-sql">在本示例中， 数据库中除了CDB$ROOT和PDB$SEED，还有PDB2和PDB4，选择恢复的是PDB4，因此PDB2在recover时必须进行排除。
+
+run{
+recover database skip forever tablespace PDB2:SYSTEM,PDB2:SYSAUX;
+}
+</code></pre>
+</li>
+<li>
+<p>打开数据库</p>
+<pre><code class="language-sql">打开后查看发现有pdb2，这个实际时不可用的，且没有实际数据，直接drop掉即可。
+SQL&gt; show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+        2  PDB$SEED                       MOUNTED
+        3  PDB2                           MOUNTED
+        5  PDB4                           MOUNTED
+
+SQL&gt; alter pluggable database PDB2 open;
+alter pluggable database PDB2 open
+*
+ERROR at line   1:
+ORA-01147: SYSTEM tablespace file 8 is offline
+SQL&gt; drop pluggable database pdb2 including datafiles;
+Pluggable database dropped.
+
+而在打开PDB4时报出了ORA-65086，这里可以试下插拔一次。
+
+SQL&gt; alter pluggable database pdb4 open;
+alter pluggable database pdb4 open
+*
+ERROR at line   1:
+ORA-65086: cannot open/close the pluggable database
+
+SQL&gt; alter pluggable database pdb4 unplug into '/tmp/pdb41.xml';
+
+Pluggable database altered.
+
+1* select   pdb_name,status from dba_pdbs
+
+SQL&gt; /
+
+PDB_NAME             STATUS
+-------------------- ---------
+PDB$SEED             NEW
+PDB4                 UNPLUGGED
+
+SQL&gt; drop pluggable database pdb4 keep datafiles;
+
+Pluggable database dropped.
+
+SQL&gt; select   pdb_name,status from dba_pdbs;
+
+PDB_NAME             STATUS
+-------------------- ---------
+PDB$SEED             NEW
+
+SQL&gt; create pluggable database PDB4 using '/tmp/pdb41.xml' nocopy tempfile reuse;
+Pluggable database created.
+
+SQL&gt; select pdb_name,status from dba_pdbs;
+
+PDB_NAME             STATUS
+-------------------- ---------
+PDB4                 NEW
+PDB$SEED             NEW
+
+SQL&gt; alter pluggable database pdb4 open;
+
+Pluggable database altered.
+
+SQL&gt; show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       MOUNTED
+         3 PDB4                           READ WRITE NO
+
+
+
+经过测试，可以只对需要的PDB进行备份后进行恢复即可,在迁移时并不需要整个库都备份，这样的话可以节省不少时间和空间。
+
+run{
+allocate   channel CH1 device type disk format    '/home/oracle/backup/full_db_%U';
+backup database root include current   controlfile plus archivelog; 
+backup    database &quot;PDB$SEED&quot;;
+backup pluggable database PDB4 include   current controlfile plus archivelog;
+release  channel CH1 ;
+}
+BACKUP current   controlfile  format '/home/oracle/backup/control_%d_%T_%u.ctl';
+
+后面恢复的方法与以上相同。
+</code></pre>
+</li>
+</ol>
+</li>
+</ol>
 ]]></content>
     </entry>
     <entry>
