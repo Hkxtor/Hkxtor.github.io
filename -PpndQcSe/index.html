@@ -162,159 +162,33 @@
 </script>
             <div class="main">
                 <div class="container">
-                    <article class="post-wrap">
-                        <header class="post-header">
-                            <h1 class="post-title">
-                                MySQL自带的性能压力测试工具mysqlslap
-                            </h1>
+                    <div class="post-wrap archive">
+                        
                             
-                                <!--en-->
-                                <div class="post-meta en">
-                                    Author:
-                                    <a itemprop="author" rel="author" href="/">
-                                        老黄的养生会所
-                                    </a>
-                                    <span class="post-time">
-                                Date: <a href="#">2020-04-28</a>
-                            </span>
-                                    <span class="post-readtime">Reading Time:<a
-                                    href="#">1.8
-                                    mins</a></span>
-                                    <span class="post-words">words:<a href="#">353</a></span>
+                                <h3>
+                                    2020
+                                </h3>
+                                
                                     
-                                        <span class="post-category">
-                                Category:
-                                
-                                <a href="https://hkxtor.github.io/3LgO6i0X_/">mysql</a>
-                                
-                            </span>
+
+                                        <article class="archive-item">
+                                            <a class="archive-item-link" href="https://hkxtor.github.io/DAs8G2vZY/">
+                                                Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header
+                                            </a>
+                                            <span class="archive-item-date">2020-05-14 </span>
+                                        </article>
                                         
-                                            Views:
-                                            <span data-hk-page="current"> - </span>
                                             
-                                </div>
-                                
-                        </header>
-                        <div class="post-content">
-                            <pre><code>--only-print 只打印测试语句而不实际执行。
---detach=N 执行N条语句后断开重连。
-
-# 单线程测试。测试做了什么。
-mysqlslap -a -uroot -p123456
- 
-# 多线程测试。使用–concurrency来模拟并发连接。
-mysqlslap -a -c 100 -uroot -p123456
- 
-# 迭代测试。用于需要多次执行测试得到平均值。
-mysqlslap -a -i 10 -uroot -p123456
- 
-mysqlslap --auto-generate-sql-add-autoincrement -a -uroot -p123456
-mysqlslap -a --auto-generate-sql-load-type=mixed -uroot -p123456
-mysqlslap -a --auto-generate-sql-secondary-indexes=3 -uroot -p123456
-mysqlslap -a --auto-generate-sql-write-number=1000 -uroot -p123456
-mysqlslap --create-schema world -q &quot;select count(*) from City&quot; -uroot -p123456
-mysqlslap -a -e innodb -uroot -p123456
-mysqlslap -a --number-of-queries=10 -uroot -p123456
- 
-# 测试同时不同的存储引擎的性能进行对比：
-mysqlslap -a --concurrency=50,100 --number-of-queries 1000 --iterations=5 --engine=myisam,innodb --debug-info -uroot -p123456
- 
-# 500和1000个并发分别得到一次测试结果(Benchmark)，并发数越多，执行完所有查询的时间越长。为了准确起见，可以多测试几次:
-mysqlslap -a --concurrency=500,1000 --auto-generate-sql-add-autoincrement --auto-generate-sql-secondary-indexes=10 --number-of-queries 2000 --iterations=5
-
-Benchmark
-        Average number of seconds to run all queries: 1.551 seconds
-        Minimum number of seconds to run all queries: 1.441 seconds
-        Maximum number of seconds to run all queries: 1.716 seconds
-        Number of clients running queries: 500
-        Average number of queries per client: 4
-
-Benchmark
-        Average number of seconds to run all queries: 1.734 seconds
-        Minimum number of seconds to run all queries: 1.589 seconds
-        Maximum number of seconds to run all queries: 1.911 seconds
-        Number of clients running queries: 1000
-        Average number of queries per client: 2
-</code></pre>
-
-                        </div>
-                        
-                            <div class="post-toc">
-                                
-                            </div>
-                            
-                                
-                                    
-                                        <!--en-->
-                                        <section class="post-copyright en">
-                                            <p class="copyright-item">
-                                                <span>Author:</span>
-                                                <span>老黄的养生会所</span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>Permalink:</span>
-                                                <span><a href="https://hkxtor.github.io/DQakzE_dy/">https://hkxtor.github.io/DQakzE_dy/</a></span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>License:</span>
-                                                <span>MIT License</span>
-                                            </p>
-                                        </section>
-                                        
                                                 
-                                                    
-                                                        <!-- Share-->
-                                                        <span style="margin-right:15px">
-                                                    <i class="post-share"></i>
-                                                    <span>Share:</span>
-                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/DQakzE_dy/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=qzone&title=MySQL自带的性能压力测试工具mysqlslap&pics=https://hkxtor.github.io/images/avatar.png?v=1589427775614&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=weibo&title=MySQL自带的性能压力测试工具mysqlslap + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1589427775614 "><i class="fa fa-weibo "></i></a>
-                                                        
-                                                                </span>
-                                                                <!--en-->
-                                                                <section class="post-tags en ">
-                                                                    <div>
-                                                                        <span>Tag(s):</span>
-                                                                        <span class="tag ">
+                    </div>
+                    <div class="pagination-container">
                         
-                        
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/">#
-                                                mysql
-                                                    </a>
-                                                    
+                                                
                                                         
-                                                            </span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <a href="javascript:window.history.back();">back</a>
-                                                                        <span>&dot;</span>
-                                                                        <a href="#">home</a>
-                                                                    </div>
-                                                                </section>
                                                                 
-                                                                                <!---->
-                                                                                <section class="post-nav">
-                                                                                    
-                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/BwozcZWlU/">
-                                                                                            mysql无损/半同步复制
-                                                                                        </a>
-                                                                                        
-                                                                                            
-                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/1VMe2UNvc/">
-                                                                                                    MySQL体系结构与管理
-                                                                                                </a>
-                                                                                                
-                                                                                </section>
-                    </article>
+                    </div>
                 </div>
-                
-
             </div>
-    </div>
-    </div>
     </div>
     
     <div id="player"></div>
@@ -439,8 +313,5 @@ Benchmark
                 
         </div>
 </body>
-<script>
-    scroll();
-</script>
 
 </html>

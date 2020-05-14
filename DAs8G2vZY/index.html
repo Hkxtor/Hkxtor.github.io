@@ -165,7 +165,7 @@
                     <article class="post-wrap">
                         <header class="post-header">
                             <h1 class="post-title">
-                                MySQL自带的性能压力测试工具mysqlslap
+                                Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header
                             </h1>
                             
                                 <!--en-->
@@ -175,17 +175,19 @@
                                         老黄的养生会所
                                     </a>
                                     <span class="post-time">
-                                Date: <a href="#">2020-04-28</a>
+                                Date: <a href="#">2020-05-14</a>
                             </span>
                                     <span class="post-readtime">Reading Time:<a
-                                    href="#">1.8
+                                    href="#">1.5
                                     mins</a></span>
-                                    <span class="post-words">words:<a href="#">353</a></span>
+                                    <span class="post-words">words:<a href="#">277</a></span>
                                     
                                         <span class="post-category">
                                 Category:
                                 
-                                <a href="https://hkxtor.github.io/3LgO6i0X_/">mysql</a>
+                                <a href="https://hkxtor.github.io/-PpndQcSe/">故障</a>
+                                
+                                <a href="https://hkxtor.github.io/UhtfwpcK7/">oracle</a>
                                 
                             </span>
                                         
@@ -196,51 +198,58 @@
                                 
                         </header>
                         <div class="post-content">
-                            <pre><code>--only-print 只打印测试语句而不实际执行。
---detach=N 执行N条语句后断开重连。
-
-# 单线程测试。测试做了什么。
-mysqlslap -a -uroot -p123456
- 
-# 多线程测试。使用–concurrency来模拟并发连接。
-mysqlslap -a -c 100 -uroot -p123456
- 
-# 迭代测试。用于需要多次执行测试得到平均值。
-mysqlslap -a -i 10 -uroot -p123456
- 
-mysqlslap --auto-generate-sql-add-autoincrement -a -uroot -p123456
-mysqlslap -a --auto-generate-sql-load-type=mixed -uroot -p123456
-mysqlslap -a --auto-generate-sql-secondary-indexes=3 -uroot -p123456
-mysqlslap -a --auto-generate-sql-write-number=1000 -uroot -p123456
-mysqlslap --create-schema world -q &quot;select count(*) from City&quot; -uroot -p123456
-mysqlslap -a -e innodb -uroot -p123456
-mysqlslap -a --number-of-queries=10 -uroot -p123456
- 
-# 测试同时不同的存储引擎的性能进行对比：
-mysqlslap -a --concurrency=50,100 --number-of-queries 1000 --iterations=5 --engine=myisam,innodb --debug-info -uroot -p123456
- 
-# 500和1000个并发分别得到一次测试结果(Benchmark)，并发数越多，执行完所有查询的时间越长。为了准确起见，可以多测试几次:
-mysqlslap -a --concurrency=500,1000 --auto-generate-sql-add-autoincrement --auto-generate-sql-secondary-indexes=10 --number-of-queries 2000 --iterations=5
-
-Benchmark
-        Average number of seconds to run all queries: 1.551 seconds
-        Minimum number of seconds to run all queries: 1.441 seconds
-        Maximum number of seconds to run all queries: 1.716 seconds
-        Number of clients running queries: 500
-        Average number of queries per client: 4
-
-Benchmark
-        Average number of seconds to run all queries: 1.734 seconds
-        Minimum number of seconds to run all queries: 1.589 seconds
-        Maximum number of seconds to run all queries: 1.911 seconds
-        Number of clients running queries: 1000
-        Average number of queries per client: 2
+                            <h1 id="过程">过程</h1>
+<p>用参数拉起实例后，还原控制文件，数据库拉起到mount状态，catalog start with xx注册备份文件。</p>
+<h1 id="现象">现象</h1>
+<p>执行catalog start with xx后，alert日志出现以下信息</p>
+<pre><code>Thu May 14 11:18:24 2020
+Setting recovery target incarnation to 2
+Setting recovery target incarnation to 2
+Error validating file dummy (14) in piece xxx: missing header
+Expanded controlfile section 14 from 245 to 490 records
+Requested to grow by 245 recards; added 3 blocks of records
 </code></pre>
+<p>执行还原脚本出现以下报错后退出</p>
+<pre><code>ORA-01180: can not create datafile 1
+ORA-01110: data file 1:  '+DATA/xxxx/datafile/system01.dbf'
+</code></pre>
+<h1 id="解决过程">解决过程</h1>
+<p>rman中查看incarnation</p>
+<pre><code>RMAN&gt; list incarnation;
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS Reset SCN  Reset Time
+------- ------- -------- ---------------- ------ ------------------ ----------
+1       1       ORCL     1446008355       PARENT   1                2014/12/26 14:31:00
+2       2       ORCL     1446008355       CURRENT  17034938503292   2020/05/09 17:34:36
+</code></pre>
+<p>重置incarnation回1</p>
+<pre><code>RMAN&gt; reset database to incarnation 1;
+database reset to incatnation 1
+
+RMAN&gt; list incarnation;
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS Reset SCN  Reset Time
+------- ------- -------- ---------------- ------ ------------------ ----------
+1       1       ORCL     1446008355       CURRENT   1               2014/12/26 14:31:00
+2       2       ORCL     1446008355       ORPHAN  17034938503292    2020/05/09 17:34:36
+</code></pre>
+<p>观察alert日志</p>
+<pre><code>Thu May 14 11:21:28 2020
+Setting recovery target incarnation to 1
+</code></pre>
+<p>在执行还原脚本，还原成功</p>
 
                         </div>
                         
                             <div class="post-toc">
-                                
+                                <ul class="markdownIt-TOC">
+<li><a href="#%E8%BF%87%E7%A8%8B">过程</a></li>
+<li><a href="#%E7%8E%B0%E8%B1%A1">现象</a></li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E8%BF%87%E7%A8%8B">解决过程</a></li>
+</ul>
+
                             </div>
                             
                                 
@@ -254,7 +263,7 @@ Benchmark
 
                                             <p class="copyright-item">
                                                 <span>Permalink:</span>
-                                                <span><a href="https://hkxtor.github.io/DQakzE_dy/">https://hkxtor.github.io/DQakzE_dy/</a></span>
+                                                <span><a href="https://hkxtor.github.io/DAs8G2vZY/">https://hkxtor.github.io/DAs8G2vZY/</a></span>
                                             </p>
 
                                             <p class="copyright-item">
@@ -269,9 +278,9 @@ Benchmark
                                                         <span style="margin-right:15px">
                                                     <i class="post-share"></i>
                                                     <span>Share:</span>
-                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/DQakzE_dy/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=qzone&title=MySQL自带的性能压力测试工具mysqlslap&pics=https://hkxtor.github.io/images/avatar.png?v=1589427775614&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/DQakzE_dy/&sharesource=weibo&title=MySQL自带的性能压力测试工具mysqlslap + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1589427775614 "><i class="fa fa-weibo "></i></a>
+                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/DAs8G2vZY/"><i class="fa fa-qrcode"></i></a>
+                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/DAs8G2vZY/&sharesource=qzone&title=Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header&pics=https://hkxtor.github.io/images/avatar.png?v=1589427775614&summary="><i class="fa fa-qq"></i></a>
+                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/DAs8G2vZY/&sharesource=weibo&title=Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1589427775614 "><i class="fa fa-weibo "></i></a>
                                                         
                                                                 </span>
                                                                 <!--en-->
@@ -281,8 +290,12 @@ Benchmark
                                                                         <span class="tag ">
                         
                         
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/">#
-                                                mysql
+                        <a href="https://hkxtor.github.io/-PpndQcSe/">#
+                                                故障
+                                                    </a>
+                                                    
+                        <a href="https://hkxtor.github.io/UhtfwpcK7/">#
+                                                oracle
                                                     </a>
                                                     
                                                         
@@ -298,13 +311,9 @@ Benchmark
                                                                                 <!---->
                                                                                 <section class="post-nav">
                                                                                     
-                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/BwozcZWlU/">
-                                                                                            mysql无损/半同步复制
-                                                                                        </a>
-                                                                                        
                                                                                             
-                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/1VMe2UNvc/">
-                                                                                                    MySQL体系结构与管理
+                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/BwozcZWlU/">
+                                                                                                    mysql无损/半同步复制
                                                                                                 </a>
                                                                                                 
                                                                                 </section>
