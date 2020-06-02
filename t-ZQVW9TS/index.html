@@ -50,7 +50,6 @@
                     })();
                 </script>
                 
-        <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
 </head>
 
 <body>
@@ -163,67 +162,180 @@
 </script>
             <div class="main">
                 <div class="container">
-                    <div class="intro">
-                        <div class="avatar">
-                            <a href="https://hkxtor.github.io"><img src="https://hkxtor.github.io/images/avatar.png?v=1591084537417"></a>
-                        </div>
-                        <div class="nickname">
+                    <article class="post-wrap">
+                        <header class="post-header">
+                            <h1 class="post-title">
+                                clickhouse installation on centos 7.8
+                            </h1>
                             
-                        </div>
-                        <div class="description">
-                            <span id="subtitle">
+                                <!--en-->
+                                <div class="post-meta en">
+                                    Author:
+                                    <a itemprop="author" rel="author" href="/">
+                                        老黄的养生会所
+                                    </a>
+                                    <span class="post-time">
+                                Date: <a href="#">2020-06-02</a>
+                            </span>
+                                    <span class="post-readtime">Reading Time:<a
+                                    href="#">2.3
+                                    mins</a></span>
+                                    <span class="post-words">words:<a href="#">395</a></span>
+                                    
+                                        <span class="post-category">
+                                Category:
+                                
+                                <a href="https://hkxtor.github.io/G_1hm3G4q/">clickhouse</a>
                                 
                             </span>
+                                        
+                                            Views:
+                                            <span data-hk-page="current"> - </span>
+                                            
+                                </div>
+                                
+                        </header>
+                        <div class="post-content">
+                            <h2 id="系统检查">系统检查</h2>
+<pre><code># grep -q sse4_2 /proc/cpuinfo &amp;&amp; echo &quot;SSE 4.2 supported&quot; || echo &quot;SSE 4.2 not supported&quot;
+SSE 4.2 supported
+</code></pre>
+<h2 id="rpm包安装">RPM包安装</h2>
+<pre><code>建议对CentOS，RedHat和所有其他基于rpm的Linux发行版使用官方的预编译rpm软件包。
+sudo yum install yum-utils
+sudo rpm --import https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+sudo yum-config-manager --add-repo https://repo.clickhouse.tech/rpm/stable/x86_64
+</code></pre>
+<h2 id="启动">启动</h2>
+<pre><code>systemctl daemon-reload
+systemctl start clickhouse-server.service
+# systemctl status clickhouse-server.service 
+● clickhouse-server.service - ClickHouse Server (analytic DBMS for big data)
+Loaded: loaded (/etc/systemd/system/clickhouse-server.service; enabled; vendor preset: disabled)
+Active: active (running) since Tue 2020-06-02 15:45:22 CST; 8s ago
+Main PID: 13949 (clickhouse-serv)
+    Tasks: 44
+Memory: 163.9M
+CGroup: /system.slice/clickhouse-server.service
+        └─13949 /usr/bin/clickhouse-server --config=/etc/clickhouse-server/config.xml --pid-file=/run/clickhouse-server/clickhouse-server.pid
+
+Jun 02 15:45:22 hqcentos clickhouse-server[13949]: Include not found: clickhouse_compression
+Jun 02 15:45:22 hqcentos clickhouse-server[13949]: Logging trace to /var/log/clickhouse-server/clickhouse-server.log
+Jun 02 15:45:22 hqcentos clickhouse-server[13949]: Logging errors to /var/log/clickhouse-server/clickhouse-server.err.log
+Jun 02 15:45:28 hqcentos clickhouse-server[13949]: Processing configuration file '/etc/clickhouse-server/users.xml'.
+Jun 02 15:45:28 hqcentos clickhouse-server[13949]: Include not found: networks
+Jun 02 15:45:28 hqcentos clickhouse-server[13949]: Saved preprocessed configuration to '/var/lib/clickhouse//preprocessed_configs/users.xml'.
+Jun 02 15:45:30 hqcentos clickhouse-server[13949]: Processing configuration file '/etc/clickhouse-server/config.xml'.
+Jun 02 15:45:30 hqcentos clickhouse-server[13949]: Include not found: clickhouse_remote_servers
+Jun 02 15:45:30 hqcentos clickhouse-server[13949]: Include not found: clickhouse_compression
+Jun 02 15:45:30 hqcentos clickhouse-server[13949]: Saved preprocessed configuration to '/var/lib/clickhouse//preprocessed_configs/config.xml'.
+</code></pre>
+<h2 id="登录">登录</h2>
+<pre><code># clickhouse-client 
+ClickHouse client version 20.4.4.18 (official build).
+Connecting to localhost:9000 as user default.
+Connected to ClickHouse server version 20.4.4 revision 54434.
+
+hqcentos :) select 1;
+
+SELECT 1
+
+┌─1─┐
+│ 1 │
+└───┘
+
+1 rows in set. Elapsed: 0.002 sec. 
+
+hqcentos :) 
+</code></pre>
+<p>简单的安装配置到此结束</p>
+
                         </div>
-                        <div class="links">
+                        
+                            <div class="post-toc">
+                                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E7%B3%BB%E7%BB%9F%E6%A3%80%E6%9F%A5">系统检查</a></li>
+<li><a href="#rpm%E5%8C%85%E5%AE%89%E8%A3%85">RPM包安装</a></li>
+<li><a href="#%E5%90%AF%E5%8A%A8">启动</a></li>
+<li><a href="#%E7%99%BB%E5%BD%95">登录</a></li>
+</ul>
+</li>
+</ul>
+
+                            </div>
                             
                                 
+                                    
+                                        <!--en-->
+                                        <section class="post-copyright en">
+                                            <p class="copyright-item">
+                                                <span>Author:</span>
+                                                <span>老黄的养生会所</span>
+                                            </p>
+
+                                            <p class="copyright-item">
+                                                <span>Permalink:</span>
+                                                <span><a href="https://hkxtor.github.io/t-ZQVW9TS/">https://hkxtor.github.io/t-ZQVW9TS/</a></span>
+                                            </p>
+
+                                            <p class="copyright-item">
+                                                <span>License:</span>
+                                                <span>MIT License</span>
+                                            </p>
+                                        </section>
                                         
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                                
-                                        
-                        </div>
-                    </div>
+                                                
+                                                    
+                                                        <!-- Share-->
+                                                        <span style="margin-right:15px">
+                                                    <i class="post-share"></i>
+                                                    <span>Share:</span>
+                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/t-ZQVW9TS/"><i class="fa fa-qrcode"></i></a>
+                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/t-ZQVW9TS/&sharesource=qzone&title=clickhouse installation on centos 7.8&pics=https://hkxtor.github.io/images/avatar.png?v=1591084537417&summary="><i class="fa fa-qq"></i></a>
+                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/t-ZQVW9TS/&sharesource=weibo&title=clickhouse installation on centos 7.8 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1591084537417 "><i class="fa fa-weibo "></i></a>
+                                                        
+                                                                </span>
+                                                                <!--en-->
+                                                                <section class="post-tags en ">
+                                                                    <div>
+                                                                        <span>Tag(s):</span>
+                                                                        <span class="tag ">
+                        
+                        
+                        <a href="https://hkxtor.github.io/G_1hm3G4q/">#
+                                                clickhouse
+                                                    </a>
+                                                    
+                                                        
+                                                            </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <a href="javascript:window.history.back();">back</a>
+                                                                        <span>&dot;</span>
+                                                                        <a href="#">home</a>
+                                                                    </div>
+                                                                </section>
+                                                                
+                                                                                <!---->
+                                                                                <section class="post-nav">
+                                                                                    
+                                                                                            
+                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/DAs8G2vZY/">
+                                                                                                    Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header
+                                                                                                </a>
+                                                                                                
+                                                                                </section>
+                    </article>
                 </div>
+                
+
             </div>
     </div>
-
-</body>
-<script>
-    // type 
-    var typed = new Typed("#subtitle", {
-        strings: ['', '', ''],
-        startDelay: 10,
-        typeSpeed: 200,
-        loop: true,
-        backSpeed: 100,
-        showCursor: true
-    });
-    //head title
-    var titleTime;
-    document.addEventListener("visibilitychange", function() {
-        document.hidden ? (document.title = "\uD83D\uDE25" + OriginTitile, clearTimeout(titleTime)) : (document.title = "\uD83D\uDE1D" + OriginTitile, titleTime = setTimeout(function() {
-            document.title = OriginTitile
-        }, 2E3))
-    });
-    var OriginTitile = document.title;
-</script>
-
+    </div>
+    </div>
+    
     <div id="player"></div>
     
         <footer id="footer" class="footer">
@@ -344,5 +456,10 @@
                     console.log("\n %c \u26a1Theme:Chic Author's Blog:https://blog.itjoker.cn  Write By ITJoker  \n\n", "color: #ffffff; background: rgba(49, 49, 49, 0.85); padding:5px 0;border-radius:5px;");
                 </script>
                 
+        </div>
+</body>
+<script>
+    scroll();
+</script>
 
 </html>
