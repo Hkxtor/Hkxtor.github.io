@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-06-02T07:55:43.204Z</updated>
+    <updated>2020-06-29T08:15:53.665Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -1313,6 +1313,16 @@ wait counts: calls=0 os=0
 </ol>
 <h1 id="4-总结">4. 总结</h1>
 <pre><code>本文的目标不是为了排查IO变慢的原因，而是为了如何寻找判定IO慢的证据。如果性能变差，那么IO慢可能成为性能问题的一个潜在原因，需要从数据库角度来分析如何采集支持的证据；如果潜在原因是由于操作系统级别的IO慢，那么负责IO子系统工程师需要参与进来诊断和修复这个问题。</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[awr相关]]></title>
+        <id>https://hkxtor.github.io/EbXXvFfvd/</id>
+        <link href="https://hkxtor.github.io/EbXXvFfvd/">
+        </link>
+        <updated>2017-06-29T08:15:03.000Z</updated>
+        <content type="html"><![CDATA[<p>AWR Snapshots Are Not Generated due to ORA-12751 (文档 ID 2243670.1)</p>
+<p>AWR Auto Flush Action Timeout at Insert Into WRH$_SERVICE_STAT (文档 ID 2294282.1)</p>
 ]]></content>
     </entry>
 </feed>
