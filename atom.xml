@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-06-29T08:15:53.665Z</updated>
+    <updated>2020-06-30T09:02:42.552Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -316,6 +316,81 @@ Benchmark
         Maximum number of seconds to run all queries: 1.911 seconds
         Number of clients running queries: 1000
         Average number of queries per client: 2
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Mysql 长事务处理]]></title>
+        <id>https://hkxtor.github.io/0k4Pjffz5/</id>
+        <link href="https://hkxtor.github.io/0k4Pjffz5/">
+        </link>
+        <updated>2019-06-26T09:01:03.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="1-背景">1. 背景</h1>
+<pre><code>1. 某个SQL执行特别慢，导致整个transaction一直处于running阶段
+2. 某个Session的SQL已经执行完了，但是迟迟没有commit，一直处于sleep阶段
+3. 某个Session处于lock wait阶段，迟迟没有结束
+4. 以上，大部分原因都是大事务导致的，怎么处理呢
+</code></pre>
+<h1 id="2-大事务的特征">2. 大事务的特征</h1>
+<pre><code>1. transaction开启到结束的时间非常长
+2. 正在执行的事务
+3. 未提交的事务
+</code></pre>
+<h2 id="21-监控那些正在执行的事务">2.1 监控那些正在执行的事务</h2>
+<pre><code class="language-sql">select * from sys.processlist;
+show processlist;
+select * from information_schema.processlist;
+select * from sys.session;
+select * from information_schema.innodb_trx;
+select * from performance_schema.events_statements_current;
+</code></pre>
+<h2 id="22-如何监控那些未提交的事务">2.2 如何监控那些未提交的事务</h2>
+<pre><code class="language-sql">select * from information_schema.innodb_trx
+
+如何两者结合
+
+select trx_id,INNODB_TRX.trx_state,INNODB_TRX.trx_started,se.conn_id as processlist_id,trx_lock_memory_bytes,se.user,se.command,se.state,se.current_statement,se.last_statement from information_schema.INNODB_TRX,sys.session as se where trx_mysql_thread_id=conn_id;
++---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
+| trx_id  | trx_state | trx_started         | processlist_id | trx_lock_memory_bytes | user | command | state    | current_statement                   | last_statement                      |
++---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
+| 1592104 | LOCK WAIT | 2019-06-26 11:51:17 |              3 |                  1136 | NULL | Query   | updating | update test_1 set id=4 where id = 1 | NULL                                |
+| 1592100 | RUNNING   | 2019-06-26 11:49:08 |              2 |                  1136 | NULL | Sleep   | NULL     | NULL                                | update test_1 set id=3 where id = 1 |
++---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
+</code></pre>
+<h1 id="3-如何快速解决锁等待问题">3. 如何快速解决锁等待问题</h1>
+<pre><code class="language-sql">mysql:sys&gt; select * from sys.innodb_lock_waits\G
+*************************** 1. row ***************************
+                wait_started: 2019-06-26 11:49:58
+                    wait_age: 00:00:03
+               wait_age_secs: 3
+                locked_table: `test`.`test_1`
+                locked_index: GEN_CLUST_INDEX
+                 locked_type: RECORD
+              waiting_trx_id: 1592102
+         waiting_trx_started: 2019-06-26 11:49:58
+             waiting_trx_age: 00:00:03
+     waiting_trx_rows_locked: 2
+   waiting_trx_rows_modified: 0
+                 waiting_pid: 3
+               waiting_query: update test_1 set id=4 where id = 1
+             waiting_lock_id: 1592102:32:3:4
+           waiting_lock_mode: X
+             blocking_trx_id: 1592100
+                blocking_pid: 2
+              blocking_query: NULL
+            blocking_lock_id: 1592100:32:3:4
+          blocking_lock_mode: X
+        blocking_trx_started: 2019-06-26 11:49:08
+            blocking_trx_age: 00:00:53
+    blocking_trx_rows_locked: 1
+  blocking_trx_rows_modified: 1
+     sql_kill_blocking_query: KILL QUERY 2
+sql_kill_blocking_connection: KILL 2
+
+MySQL连kill SQL 语句都提供了
+
+通过innodb_lock_waits你只能看到被lock的语句，但是看不到是哪个query语句拥有的锁，如果幸运的话，可以看到上述的案例中 current_statement，last_statement 得到答案。
+即便没有找到那条query，也不妨碍你解决当前的问题哈
 </code></pre>
 ]]></content>
     </entry>
