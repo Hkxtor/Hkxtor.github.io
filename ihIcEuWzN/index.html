@@ -84,7 +84,7 @@
                         <input id="switch_default" type="checkbox" class="switch_default">
                         <label for="switch_default" class="toggleBtn"></label>
             </div>
-            <form id="gridea-search-form" data-update="1597914494233" action="/search/index.html">
+            <form id="gridea-search-form" data-update="1597914833479" action="/search/index.html">
                 <input class="search-input" autocomplete="off" spellcheck="false" name="q" autofocus="true" placeholder="Search...">
             </form>
         </div>
@@ -103,7 +103,7 @@
                         <!--zh-->
                         <a id="mobile-toggle-theme-zh" class="a zh">&nbsp;&#x6697;&#x9ED1;</a>
                     </div>
-                    <form id="gridea-search-form" data-update="1597914494233" action="/search/index.html">
+                    <form id="gridea-search-form" data-update="1597914833479" action="/search/index.html">
                         <input class="search-input" autocomplete="off" spellcheck="false" name="q" autofocus="true" placeholder="Search...">
                     </form>
                     <!--en-->
@@ -199,7 +199,7 @@
                         </header>
                         <div class="post-content">
                             <h1 id="rushql病毒简介">RushQL病毒简介</h1>
-<h4 id="rushql专门针对oracle数据库设计-具备一定潜伏期和隐蔽性的勒索病毒该病毒是由sql-rush-team组织发起最早于2016年11月出现其主要感染方式是将破解版或绿色版的plsql中的loginsql和afterconnectsql脚本篡改所以在使用前需检查这两个脚本若其大小不为零则很有可能已被篡改-运行被篡改后的脚本会在数据库中增加下列存储过程和触发器">RushQL专门针对Oracle数据库设计、具备一定潜伏期和隐蔽性的勒索病毒，该病毒是由“SQL RUSH Team”组织发起，最早于2016年11月出现，其主要感染方式是将破解版或绿色版的PL/SQL中的login.sql和Afterconnect.sql脚本篡改，所以在使用前需检查这两个脚本，若其大小不为零，则很有可能已被篡改。运行被篡改后的脚本会在数据库中增加下列存储过程和触发器：</h4>
+<p>RushQL专门针对Oracle数据库设计、具备一定潜伏期和隐蔽性的勒索病毒，该病毒是由“SQL RUSH Team”组织发起，最早于2016年11月出现，其主要感染方式是将破解版或绿色版的PL/SQL中的login.sql和Afterconnect.sql脚本篡改，所以在使用前需检查这两个脚本，若其大小不为零，则很有可能已被篡改。运行被篡改后的脚本会在数据库中增加下列存储过程和触发器：</p>
 <pre><code class="language-sql">存储过程：
 DBMS_SUPPORT_INTERNAL
 DBMS_STANDARD_FUN9
@@ -211,27 +211,27 @@ DBMS_SYSTEM_INTERNAL
 DBMS_CORE_INTERNAL
 </code></pre>
 <h1 id="中毒表现">中毒表现</h1>
-<h4 id="rushql病毒感染oracle数据库后先判断数据库的创建时长是否达到1200天若不满足此条件则会一直潜伏满足条件后再爆发-爆发后用户使用客户端连接数据库或者数据库alert日志中出现ora-20312ora-20313ora-20315等报错信息描述数据库已被锁死需要发送比特币到某个地址来解锁数据库">RushQL病毒感染Oracle数据库后，先判断数据库的创建时长是否达到1200天，若不满足此条件，则会一直潜伏，满足条件后再爆发。爆发后，用户使用客户端连接数据库或者数据库Alert日志中出现ORA-20312/ORA-20313/ORA-20315等报错信息，描述数据库已被锁死，需要发送比特币到某个地址来解锁数据库。</h4>
-<pre><code>Errors in file /oracle/diag/rdbms/liantiaodb/liantiaodb/trace/liantiaodb_ora_5213.trc:
+<p>RushQL病毒感染Oracle数据库后，先判断数据库的创建时长是否达到1200天，若不满足此条件，则会一直潜伏，满足条件后再爆发。爆发后，用户使用客户端连接数据库或者数据库Alert日志中出现ORA-20312/ORA-20313/ORA-20315等报错信息，描述数据库已被锁死，需要发送比特币到某个地址来解锁数据库。</p>
+<pre><code class="language-sql">Errors in file /oracle/diag/rdbms/liantiaodb/liantiaodb/trace/liantiaodb_ora_5213.trc:
 ORA-00604: 递归 SQL 级别 1 出现错误
 ORA-20315: 你的数据库已被SQL RUSH Team锁死 发送5个比特币到这个地址 166xk1FXMB2g8JxBVF5T4Aw1Z5JaZ6vrSE (大小写一致) 之后把你的Oracle SID邮寄地址 sqlrush@mail.com 我们将让你知道如何解锁你的数据库 Hi buddy, your database was hacked by SQL RUSH Team, send 5 bitcoin to address 166xk1FXMB2g8JxBVF5T4Aw1Z5JaZ6vrSE (case sensitive), after that send your Oracle SID to mail address sqlrush@mail.com, we will let you know how to unlock your database.
 ORA-06512: 在 &quot;AIQRY.DBMS_CORE_INTERNAL &quot;, line 25
 ORA-06512: 在 line 2
 </code></pre>
 <h1 id="病毒检测">病毒检测</h1>
-<h4 id="已中毒的oracle数据库中会多出上述存储过程和触发器且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格导致其无法被查询到和被删除因此在进行查询和删除时要加入通配符">已中毒的Oracle数据库中会多出上述存储过程和触发器，且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格，导致其无法被查询到和被删除，因此，在进行查询和删除时要加入通配符：</h4>
+<p>已中毒的Oracle数据库中会多出上述存储过程和触发器，且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格，导致其无法被查询到和被删除，因此，在进行查询和删除时要加入通配符：</p>
 <pre><code class="language-sql">SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_SUPPORT%';
 SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_SYSTEM_INTERNAL%';
 SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_CORE_INTERNAL%';
 SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_STANDARD_FUN9%';
 </code></pre>
-<h4 id="未爆发的数据库中可以检测到上述存储过程和触发器已爆发的数据库中除了能检测到上述存储过程和触发器还会存在很多truncate-jobs产生非常多的日志导致数据库空间被大量占用最终将数据库目录被挤爆数据库服务中断">未爆发的数据库中可以检测到上述存储过程和触发器，已爆发的数据库中除了能检测到上述存储过程和触发器，还会存在很多truncate jobs，产生非常多的日志，导致数据库空间被大量占用，最终将数据库目录被挤爆，数据库服务中断。</h4>
+<p>未爆发的数据库中可以检测到上述存储过程和触发器，已爆发的数据库中除了能检测到上述存储过程和触发器，还会存在很多truncate jobs，产生非常多的日志，导致数据库空间被大量占用，最终将数据库目录被挤爆，数据库服务中断。</p>
 <pre><code class="language-sql">SELECT COUNT(*) FROM dba_jobs WHERE schema_user='username' AND what LIKE '%truncate%';
 username为上述查询结果中的owner
 </code></pre>
 <h1 id="病毒处理">病毒处理</h1>
-<h3 id="参考httpsblogsoraclecomcnsupport_newse5afb9e695b0e68daee5ba93e79a84e2809ce6af94e789b9e5b881e694bbe587bbe2809de58f8ae998b2e68aa4">参考：https://blogs.oracle.com/cnsupport_news/%e5%af%b9%e6%95%b0%e6%8d%ae%e5%ba%93%e7%9a%84%e2%80%9c%e6%af%94%e7%89%b9%e5%b8%81%e6%94%bb%e5%87%bb%e2%80%9d%e5%8f%8a%e9%98%b2%e6%8a%a4</h3>
-<h4 id="删除上述存储过程和触发器">删除上述存储过程和触发器：</h4>
+<p>参考：https://blogs.oracle.com/cnsupport_news/%e5%af%b9%e6%95%b0%e6%8d%ae%e5%ba%93%e7%9a%84%e2%80%9c%e6%af%94%e7%89%b9%e5%b8%81%e6%94%bb%e5%87%bb%e2%80%9d%e5%8f%8a%e9%98%b2%e6%8a%a4<br>
+删除上述存储过程和触发器：</p>
 <pre><code class="language-sql">DROP PROCEDURE %DBMS_SUPPORT_INTERNAL%;
 DROP PROCEDURE %DBMS_STANDARD_FUN9%;
 DROP PROCEDURE %DBMS_SYSTEM_INTERNA%;
@@ -240,7 +240,7 @@ DROP TRIGGER %DBMS_SUPPORT_INTERNAL%;
 DROP TRIGGER %DBMS_SYSTEM_INTERNAL%;
 DROP TRIGGER %DBMS_CORE_INTERNAL%;
 </code></pre>
-<h4 id="删除异常的jobs">删除异常的jobs：</h4>
+<p>删除异常的jobs：</p>
 <pre><code class="language-sql">DELETE FROM dba_jobs WHERE schema_user='username' AND what LIKE '%truncate%';
 </code></pre>
 
@@ -248,30 +248,10 @@ DROP TRIGGER %DBMS_CORE_INTERNAL%;
                         
                             <div class="post-toc">
                                 <ul class="markdownIt-TOC">
-<li><a href="#rushql%E7%97%85%E6%AF%92%E7%AE%80%E4%BB%8B">RushQL病毒简介</a><br>
-*<br>
-*<br>
-* <a href="#rushql%E4%B8%93%E9%97%A8%E9%92%88%E5%AF%B9oracle%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1-%E5%85%B7%E5%A4%87%E4%B8%80%E5%AE%9A%E6%BD%9C%E4%BC%8F%E6%9C%9F%E5%92%8C%E9%9A%90%E8%94%BD%E6%80%A7%E7%9A%84%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E8%AF%A5%E7%97%85%E6%AF%92%E6%98%AF%E7%94%B1sql-rush-team%E7%BB%84%E7%BB%87%E5%8F%91%E8%B5%B7%E6%9C%80%E6%97%A9%E4%BA%8E2016%E5%B9%B411%E6%9C%88%E5%87%BA%E7%8E%B0%E5%85%B6%E4%B8%BB%E8%A6%81%E6%84%9F%E6%9F%93%E6%96%B9%E5%BC%8F%E6%98%AF%E5%B0%86%E7%A0%B4%E8%A7%A3%E7%89%88%E6%88%96%E7%BB%BF%E8%89%B2%E7%89%88%E7%9A%84plsql%E4%B8%AD%E7%9A%84loginsql%E5%92%8Cafterconnectsql%E8%84%9A%E6%9C%AC%E7%AF%A1%E6%94%B9%E6%89%80%E4%BB%A5%E5%9C%A8%E4%BD%BF%E7%94%A8%E5%89%8D%E9%9C%80%E6%A3%80%E6%9F%A5%E8%BF%99%E4%B8%A4%E4%B8%AA%E8%84%9A%E6%9C%AC%E8%8B%A5%E5%85%B6%E5%A4%A7%E5%B0%8F%E4%B8%8D%E4%B8%BA%E9%9B%B6%E5%88%99%E5%BE%88%E6%9C%89%E5%8F%AF%E8%83%BD%E5%B7%B2%E8%A2%AB%E7%AF%A1%E6%94%B9-%E8%BF%90%E8%A1%8C%E8%A2%AB%E7%AF%A1%E6%94%B9%E5%90%8E%E7%9A%84%E8%84%9A%E6%9C%AC%E4%BC%9A%E5%9C%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E5%A2%9E%E5%8A%A0%E4%B8%8B%E5%88%97%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8">RushQL专门针对Oracle数据库设计、具备一定潜伏期和隐蔽性的勒索病毒，该病毒是由“SQL RUSH Team”组织发起，最早于2016年11月出现，其主要感染方式是将破解版或绿色版的PL/SQL中的login.sql和Afterconnect.sql脚本篡改，所以在使用前需检查这两个脚本，若其大小不为零，则很有可能已被篡改。运行被篡改后的脚本会在数据库中增加下列存储过程和触发器：</a></li>
-<li><a href="#%E4%B8%AD%E6%AF%92%E8%A1%A8%E7%8E%B0">中毒表现</a><br>
-*<br>
-*<br>
-* <a href="#rushql%E7%97%85%E6%AF%92%E6%84%9F%E6%9F%93oracle%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8E%E5%85%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%88%9B%E5%BB%BA%E6%97%B6%E9%95%BF%E6%98%AF%E5%90%A6%E8%BE%BE%E5%88%B01200%E5%A4%A9%E8%8B%A5%E4%B8%8D%E6%BB%A1%E8%B6%B3%E6%AD%A4%E6%9D%A1%E4%BB%B6%E5%88%99%E4%BC%9A%E4%B8%80%E7%9B%B4%E6%BD%9C%E4%BC%8F%E6%BB%A1%E8%B6%B3%E6%9D%A1%E4%BB%B6%E5%90%8E%E5%86%8D%E7%88%86%E5%8F%91-%E7%88%86%E5%8F%91%E5%90%8E%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E6%88%96%E8%80%85%E6%95%B0%E6%8D%AE%E5%BA%93alert%E6%97%A5%E5%BF%97%E4%B8%AD%E5%87%BA%E7%8E%B0ora-20312ora-20313ora-20315%E7%AD%89%E6%8A%A5%E9%94%99%E4%BF%A1%E6%81%AF%E6%8F%8F%E8%BF%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%B2%E8%A2%AB%E9%94%81%E6%AD%BB%E9%9C%80%E8%A6%81%E5%8F%91%E9%80%81%E6%AF%94%E7%89%B9%E5%B8%81%E5%88%B0%E6%9F%90%E4%B8%AA%E5%9C%B0%E5%9D%80%E6%9D%A5%E8%A7%A3%E9%94%81%E6%95%B0%E6%8D%AE%E5%BA%93">RushQL病毒感染Oracle数据库后，先判断数据库的创建时长是否达到1200天，若不满足此条件，则会一直潜伏，满足条件后再爆发。爆发后，用户使用客户端连接数据库或者数据库Alert日志中出现ORA-20312/ORA-20313/ORA-20315等报错信息，描述数据库已被锁死，需要发送比特币到某个地址来解锁数据库。</a></li>
-<li><a href="#%E7%97%85%E6%AF%92%E6%A3%80%E6%B5%8B">病毒检测</a><br>
-*<br>
-*<br>
-* <a href="#%E5%B7%B2%E4%B8%AD%E6%AF%92%E7%9A%84oracle%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E4%BC%9A%E5%A4%9A%E5%87%BA%E4%B8%8A%E8%BF%B0%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8%E4%B8%94%E8%AF%A5%E7%97%85%E6%AF%92%E7%9A%84%E5%88%B6%E4%BD%9C%E8%80%85%E9%9D%9E%E5%B8%B8%E7%8B%A1%E7%8C%BE%E7%9A%84%E5%9C%A8%E4%B8%8A%E8%BF%B0%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8%E7%9A%84%E5%90%8D%E5%AD%97%E4%B8%AD%E5%8A%A0%E5%85%A5%E4%BA%86%E5%A4%9A%E4%B8%AA%E7%A9%BA%E6%A0%BC%E5%AF%BC%E8%87%B4%E5%85%B6%E6%97%A0%E6%B3%95%E8%A2%AB%E6%9F%A5%E8%AF%A2%E5%88%B0%E5%92%8C%E8%A2%AB%E5%88%A0%E9%99%A4%E5%9B%A0%E6%AD%A4%E5%9C%A8%E8%BF%9B%E8%A1%8C%E6%9F%A5%E8%AF%A2%E5%92%8C%E5%88%A0%E9%99%A4%E6%97%B6%E8%A6%81%E5%8A%A0%E5%85%A5%E9%80%9A%E9%85%8D%E7%AC%A6">已中毒的Oracle数据库中会多出上述存储过程和触发器，且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格，导致其无法被查询到和被删除，因此，在进行查询和删除时要加入通配符：</a><br>
-* <a href="#%E6%9C%AA%E7%88%86%E5%8F%91%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E5%8F%AF%E4%BB%A5%E6%A3%80%E6%B5%8B%E5%88%B0%E4%B8%8A%E8%BF%B0%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8%E5%B7%B2%E7%88%86%E5%8F%91%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%99%A4%E4%BA%86%E8%83%BD%E6%A3%80%E6%B5%8B%E5%88%B0%E4%B8%8A%E8%BF%B0%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8%E8%BF%98%E4%BC%9A%E5%AD%98%E5%9C%A8%E5%BE%88%E5%A4%9Atruncate-jobs%E4%BA%A7%E7%94%9F%E9%9D%9E%E5%B8%B8%E5%A4%9A%E7%9A%84%E6%97%A5%E5%BF%97%E5%AF%BC%E8%87%B4%E6%95%B0%E6%8D%AE%E5%BA%93%E7%A9%BA%E9%97%B4%E8%A2%AB%E5%A4%A7%E9%87%8F%E5%8D%A0%E7%94%A8%E6%9C%80%E7%BB%88%E5%B0%86%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%AE%E5%BD%95%E8%A2%AB%E6%8C%A4%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%8D%E5%8A%A1%E4%B8%AD%E6%96%AD">未爆发的数据库中可以检测到上述存储过程和触发器，已爆发的数据库中除了能检测到上述存储过程和触发器，还会存在很多truncate jobs，产生非常多的日志，导致数据库空间被大量占用，最终将数据库目录被挤爆，数据库服务中断。</a></li>
-<li><a href="#%E7%97%85%E6%AF%92%E5%A4%84%E7%90%86">病毒处理</a><br>
-*
-<ul>
-<li><a href="#%E5%8F%82%E8%80%83httpsblogsoraclecomcnsupport_newse5afb9e695b0e68daee5ba93e79a84e2809ce6af94e789b9e5b881e694bbe587bbe2809de58f8ae998b2e68aa4">参考：https://blogs.oracle.com/cnsupport_news/%e5%af%b9%e6%95%b0%e6%8d%ae%e5%ba%93%e7%9a%84%e2%80%9c%e6%af%94%e7%89%b9%e5%b8%81%e6%94%bb%e5%87%bb%e2%80%9d%e5%8f%8a%e9%98%b2%e6%8a%a4</a>
-<ul>
-<li><a href="#%E5%88%A0%E9%99%A4%E4%B8%8A%E8%BF%B0%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8">删除上述存储过程和触发器：</a></li>
-<li><a href="#%E5%88%A0%E9%99%A4%E5%BC%82%E5%B8%B8%E7%9A%84jobs">删除异常的jobs：</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#rushql%E7%97%85%E6%AF%92%E7%AE%80%E4%BB%8B">RushQL病毒简介</a></li>
+<li><a href="#%E4%B8%AD%E6%AF%92%E8%A1%A8%E7%8E%B0">中毒表现</a></li>
+<li><a href="#%E7%97%85%E6%AF%92%E6%A3%80%E6%B5%8B">病毒检测</a></li>
+<li><a href="#%E7%97%85%E6%AF%92%E5%A4%84%E7%90%86">病毒处理</a></li>
 </ul>
 
                             </div>
@@ -303,8 +283,8 @@ DROP TRIGGER %DBMS_CORE_INTERNAL%;
                                                     <i class="post-share"></i>
                                                     <span>Share:</span>
                                                         <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/ihIcEuWzN/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/ihIcEuWzN/&sharesource=qzone&title=RushQL勒索病毒的处理&pics=https://hkxtor.github.io/images/avatar.png?v=1597914494233&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/ihIcEuWzN/&sharesource=weibo&title=RushQL勒索病毒的处理 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1597914494233 "><i class="fa fa-weibo "></i></a>
+                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/ihIcEuWzN/&sharesource=qzone&title=RushQL勒索病毒的处理&pics=https://hkxtor.github.io/images/avatar.png?v=1597914833479&summary="><i class="fa fa-qq"></i></a>
+                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/ihIcEuWzN/&sharesource=weibo&title=RushQL勒索病毒的处理 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1597914833479 "><i class="fa fa-weibo "></i></a>
                                                         
                                                                 </span>
                                                                 <!--en-->
@@ -465,7 +445,7 @@ DROP TRIGGER %DBMS_CORE_INTERNAL%;
                     CheckVersion();
                     
                     var newDate = new Date();
-                    newDate.setTime(1597914494233);
+                    newDate.setTime(1597914833479);
                     console.log(" Blog Update Time: " + newDate.toLocaleDateString());
                     console.log("\n %c \u26a1Theme:Chic Author's Blog:https://blog.itjoker.cn  Write By ITJoker  \n\n", "color: #ffffff; background: rgba(49, 49, 49, 0.85); padding:5px 0;border-radius:5px;");
                 </script>
