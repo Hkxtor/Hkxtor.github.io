@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-06-30T09:02:42.552Z</updated>
+    <updated>2020-08-20T09:02:04.338Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -10,6 +10,59 @@
     <logo>https://hkxtor.github.io/images/avatar.png</logo>
     <icon>https://hkxtor.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, 老黄的养生会所</rights>
+    <entry>
+        <title type="html"><![CDATA[RushQL勒索病毒的处理]]></title>
+        <id>https://hkxtor.github.io/ihIcEuWzN/</id>
+        <link href="https://hkxtor.github.io/ihIcEuWzN/">
+        </link>
+        <updated>2020-08-20T09:01:14.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="rushql病毒简介">RushQL病毒简介</h1>
+<h4 id="rushql专门针对oracle数据库设计-具备一定潜伏期和隐蔽性的勒索病毒该病毒是由sql-rush-team组织发起最早于2016年11月出现其主要感染方式是将破解版或绿色版的plsql中的loginsql和afterconnectsql脚本篡改所以在使用前需检查这两个脚本若其大小不为零则很有可能已被篡改-运行被篡改后的脚本会在数据库中增加下列存储过程和触发器">RushQL专门针对Oracle数据库设计、具备一定潜伏期和隐蔽性的勒索病毒，该病毒是由“SQL RUSH Team”组织发起，最早于2016年11月出现，其主要感染方式是将破解版或绿色版的PL/SQL中的login.sql和Afterconnect.sql脚本篡改，所以在使用前需检查这两个脚本，若其大小不为零，则很有可能已被篡改。运行被篡改后的脚本会在数据库中增加下列存储过程和触发器：</h4>
+<pre><code class="language-sql">存储过程：
+DBMS_SUPPORT_INTERNAL
+DBMS_STANDARD_FUN9
+DBMS_SYSTEM_INTERNA
+DBMS_CORE_INTERNAL
+触发器：
+DBMS_SUPPORT_INTERNAL
+DBMS_SYSTEM_INTERNAL
+DBMS_CORE_INTERNAL
+</code></pre>
+<h1 id="中毒表现">中毒表现</h1>
+<h4 id="rushql病毒感染oracle数据库后先判断数据库的创建时长是否达到1200天若不满足此条件则会一直潜伏满足条件后再爆发-爆发后用户使用客户端连接数据库或者数据库alert日志中出现ora-20312ora-20313ora-20315等报错信息描述数据库已被锁死需要发送比特币到某个地址来解锁数据库">RushQL病毒感染Oracle数据库后，先判断数据库的创建时长是否达到1200天，若不满足此条件，则会一直潜伏，满足条件后再爆发。爆发后，用户使用客户端连接数据库或者数据库Alert日志中出现ORA-20312/ORA-20313/ORA-20315等报错信息，描述数据库已被锁死，需要发送比特币到某个地址来解锁数据库。</h4>
+<pre><code>Errors in file /oracle/diag/rdbms/liantiaodb/liantiaodb/trace/liantiaodb_ora_5213.trc:
+ORA-00604: 递归 SQL 级别 1 出现错误
+ORA-20315: 你的数据库已被SQL RUSH Team锁死 发送5个比特币到这个地址 166xk1FXMB2g8JxBVF5T4Aw1Z5JaZ6vrSE (大小写一致) 之后把你的Oracle SID邮寄地址 sqlrush@mail.com 我们将让你知道如何解锁你的数据库 Hi buddy, your database was hacked by SQL RUSH Team, send 5 bitcoin to address 166xk1FXMB2g8JxBVF5T4Aw1Z5JaZ6vrSE (case sensitive), after that send your Oracle SID to mail address sqlrush@mail.com, we will let you know how to unlock your database.
+ORA-06512: 在 &quot;AIQRY.DBMS_CORE_INTERNAL &quot;, line 25
+ORA-06512: 在 line 2
+</code></pre>
+<h1 id="病毒检测">病毒检测</h1>
+<h4 id="已中毒的oracle数据库中会多出上述存储过程和触发器且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格导致其无法被查询到和被删除因此在进行查询和删除时要加入通配符">已中毒的Oracle数据库中会多出上述存储过程和触发器，且该病毒的制作者非常狡猾的在上述存储过程和触发器的名字中加入了多个空格，导致其无法被查询到和被删除，因此，在进行查询和删除时要加入通配符：</h4>
+<pre><code class="language-sql">SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_SUPPORT%';
+SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_SYSTEM_INTERNAL%';
+SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_CORE_INTERNAL%';
+SELECT owner,created,object_name,object_type FROM dba_objects WHERE object_name LIKE '%DBMS_STANDARD_FUN9%';
+</code></pre>
+<h4 id="未爆发的数据库中可以检测到上述存储过程和触发器已爆发的数据库中除了能检测到上述存储过程和触发器还会存在很多truncate-jobs产生非常多的日志导致数据库空间被大量占用最终将数据库目录被挤爆数据库服务中断">未爆发的数据库中可以检测到上述存储过程和触发器，已爆发的数据库中除了能检测到上述存储过程和触发器，还会存在很多truncate jobs，产生非常多的日志，导致数据库空间被大量占用，最终将数据库目录被挤爆，数据库服务中断。</h4>
+<pre><code class="language-sql">SELECT COUNT(*) FROM dba_jobs WHERE schema_user='username' AND what LIKE '%truncate%';
+username为上述查询结果中的owner
+</code></pre>
+<h1 id="病毒处理">病毒处理</h1>
+<h3 id="参考httpsblogsoraclecomcnsupport_newse5afb9e695b0e68daee5ba93e79a84e2809ce6af94e789b9e5b881e694bbe587bbe2809de58f8ae998b2e68aa4">参考：https://blogs.oracle.com/cnsupport_news/%e5%af%b9%e6%95%b0%e6%8d%ae%e5%ba%93%e7%9a%84%e2%80%9c%e6%af%94%e7%89%b9%e5%b8%81%e6%94%bb%e5%87%bb%e2%80%9d%e5%8f%8a%e9%98%b2%e6%8a%a4</h3>
+<h4 id="删除上述存储过程和触发器">删除上述存储过程和触发器：</h4>
+<pre><code class="language-sql">DROP PROCEDURE %DBMS_SUPPORT_INTERNAL%;
+DROP PROCEDURE %DBMS_STANDARD_FUN9%;
+DROP PROCEDURE %DBMS_SYSTEM_INTERNA%;
+DROP PROCEDURE %DBMS_CORE_INTERNAL%;
+DROP TRIGGER %DBMS_SUPPORT_INTERNAL%;
+DROP TRIGGER %DBMS_SYSTEM_INTERNAL%;
+DROP TRIGGER %DBMS_CORE_INTERNAL%;
+</code></pre>
+<h4 id="删除异常的jobs">删除异常的jobs：</h4>
+<pre><code class="language-sql">DELETE FROM dba_jobs WHERE schema_user='username' AND what LIKE '%truncate%';
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[clickhouse installation on centos 7.8]]></title>
         <id>https://hkxtor.github.io/t-ZQVW9TS/</id>
