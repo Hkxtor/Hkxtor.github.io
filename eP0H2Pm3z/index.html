@@ -162,117 +162,170 @@
 </script>
             <div class="main">
                 <div class="container">
-                    <div class="post-wrap archive">
-                        
+                    <article class="post-wrap">
+                        <header class="post-header">
+                            <h1 class="post-title">
+                                11.2单机数据库转换为RAC -- 使用rconfig
+                            </h1>
                             
-                                <h3>
-                                    2020
-                                </h3>
+                                <!--en-->
+                                <div class="post-meta en">
+                                    Author:
+                                    <a itemprop="author" rel="author" href="/">
+                                        老黄的养生会所
+                                    </a>
+                                    <span class="post-time">
+                                Date: <a href="#">2018-11-06</a>
+                            </span>
+                                    <span class="post-readtime">Reading Time:<a
+                                    href="#">3.5
+                                    mins</a></span>
+                                    <span class="post-words">words:<a href="#">596</a></span>
+                                    
+                                        <span class="post-category">
+                                Category:
                                 
-                                    
-
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/ihIcEuWzN/">
-                                                RushQL勒索病毒的处理
-                                            </a>
-                                            <span class="archive-item-date">2020-08-20 </span>
-                                        </article>
-                                        
-                                            
-                                    
-
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/DAs8G2vZY/">
-                                                Oracle rman恢复遇到Error validating file dummy (36) in piece xxx: missing header
-                                            </a>
-                                            <span class="archive-item-date">2020-05-14 </span>
-                                        </article>
-                                        
-                                            
-                                    
-                                            
-                                    
-                                            
-                                    
-                                            
-                                    
-                                            
-                                                
-                                <h3>
-                                    2018
-                                </h3>
+                                <a href="https://hkxtor.github.io/MurwNIHFZ/">迁移</a>
                                 
-                                    
-                                            
-                                    
-                                            
-                                    
-
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/eP0H2Pm3z/">
-                                                11.2单机数据库转换为RAC -- 使用rconfig
-                                            </a>
-                                            <span class="archive-item-date">2018-11-06 </span>
-                                        </article>
-                                        
-                                            
-                                    
-                                            
-                                    
-                                            
-                                    
-                                            
-                                                
-                                <h3>
-                                    2017
-                                </h3>
+                                <a href="https://hkxtor.github.io/UhtfwpcK7/">oracle</a>
                                 
-                                    
-                                            
-                                    
-                                            
-                                    
-                                            
-                                    
-
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/qulIB3Rk0/">
-                                                12c可插拔数据库的几种克隆迁移方法
-                                            </a>
-                                            <span class="archive-item-date">2017-11-30 </span>
-                                        </article>
+                            </span>
                                         
+                                            Views:
+                                            <span data-hk-page="current"> - </span>
                                             
-                                    
+                                </div>
+                                
+                        </header>
+                        <div class="post-content">
+                            <h1 id="rconfig的功能除了单机转换为rac还可以单机转换为standalonestandalone转换为racrac转换为standalone等等">rconfig的功能除了单机转换为RAC，还可以单机转换为Standalone，Standalone转换为RAC，RAC转换为Standalone等等。</h1>
+<p>配置文件如下</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;n:RConfig xmlns:n=&quot;http://www.oracle.com/rconfig&quot;
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+           xsi:schemaLocation=&quot;http://www.oracle.com/rconfig rconfig.xsd&quot;&gt;
+    &lt;n:ConvertToRAC&gt;   
+&lt;!-- Verify does a precheck to ensure all pre-requisites are met, before the conversion is attempted. Allowable values are: YES|NO|ONLY --&gt;
+        &lt;n:Convert verify=&quot;YES&quot;&gt;
+&lt;!--Specify current OracleHome of non-rac database for SourceDBHome --&gt;
+              &lt;n:SourceDBHome&gt;/u01/app/oracle/product/11.2.0/db_1&lt;/n:SourceDBHome&gt;
+&lt;!--Specify OracleHome where the rac database should be configured. It can be same as SourceDBHome --&gt;
+              &lt;n:TargetDBHome&gt;/u01/app/oracle/product/11.2.0/db_1&lt;/n:TargetDBHome&gt;
+&lt;!--Specify SID of non-rac database and credential. User with sysdba role is required to perform conversion --&gt;
+              &lt;n:SourceDBInfo SID=&quot;test&quot;&gt;
+                &lt;n:Credentials&gt;
+                  &lt;n:User&gt;sys&lt;/n:User&gt;
+                  &lt;n:Password&gt;Oracle123&lt;/n:Password&gt;
+                  &lt;n:Role&gt;sysdba&lt;/n:Role&gt;
+                &lt;/n:Credentials&gt;
+              &lt;/n:SourceDBInfo&gt;
+&lt;!--Specify the list of nodes that should have rac instances running for the Admin Managed Cluster Database. LocalNode should be the first node in this nodelist. --&gt;
+              &lt;n:NodeList&gt;        
+                &lt;n:Node name=&quot;rac1&quot;/&gt;
+                &lt;n:Node name=&quot;rac2&quot;/&gt;
+              &lt;/n:NodeList&gt;
+&lt;!--Specify RacOneNode along with servicename to convert database to RACOne Node --&gt;
+              &lt;!--n:RacOneNode  servicename=&quot;salestestservice&quot;/--&gt;
+&lt;!--Instance Prefix tag is optional starting with 11.2. If left empty, it is derived from db_unique_name.--&gt;
+              &lt;n:InstancePrefix&gt;test&lt;/n:InstancePrefix&gt;
+&lt;!-- Listener details are no longer needed starting 11.2. Database is registered with default listener and SCAN listener running from Oracle Grid Infrastructure home. --&gt;
+&lt;!--Specify the type of storage to be used by rac database. Allowable values are CFS|ASM. The non-rac database should have same storage type. ASM credentials are no needed for conversion. --&gt;
+              &lt;n:SharedStorage type=&quot;ASM&quot;&gt;
+&lt;!--Specify Database Area Location to be configured for rac database.If this field is left empty, current storage will be used for rac database. For CFS, this field will have directory path. --&gt;
+                &lt;n:TargetDatabaseArea&gt;+DATADG1&lt;/n:TargetDatabaseArea&gt;  # 如果已经转成使用asm，则留空，否则会使用rman进行backup as copy database的操作，消耗更多空间
+&lt;!--Specify Fast Recovery Area to be configured for rac database. If this field is left empty, current recovery area of non-rac database will be configured for rac database. If current database is not using recovery Area, the resulting rac database will not have a recovery area. --&gt;
+                &lt;n:TargetFlashRecoveryArea&gt;+DATADG1&lt;/n:TargetFlashRecoveryArea&gt; # 如果已经转成使用asm，则留空，否则会使用rman进行backup as copy database的操作，消耗更多空间
+              &lt;/n:SharedStorage&gt;
+        &lt;/n:Convert&gt;
+    &lt;/n:ConvertToRAC&gt;
+&lt;/n:RConfig&gt;
+</code></pre>
 
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/vQKm4MfiK/">
-                                                如何判断数据库IO是否慢
-                                            </a>
-                                            <span class="archive-item-date">2017-10-24 </span>
-                                        </article>
-                                        
-                                            
-                                    
-
-                                        <article class="archive-item">
-                                            <a class="archive-item-link" href="https://hkxtor.github.io/EbXXvFfvd/">
-                                                awr相关
-                                            </a>
-                                            <span class="archive-item-date">2017-06-29 </span>
-                                        </article>
-                                        
-                                            
-                                                
-                    </div>
-                    <div class="pagination-container">
+                        </div>
                         
+                            <div class="post-toc">
+                                <ul class="markdownIt-TOC">
+<li><a href="#rconfig%E7%9A%84%E5%8A%9F%E8%83%BD%E9%99%A4%E4%BA%86%E5%8D%95%E6%9C%BA%E8%BD%AC%E6%8D%A2%E4%B8%BArac%E8%BF%98%E5%8F%AF%E4%BB%A5%E5%8D%95%E6%9C%BA%E8%BD%AC%E6%8D%A2%E4%B8%BAstandalonestandalone%E8%BD%AC%E6%8D%A2%E4%B8%BAracrac%E8%BD%AC%E6%8D%A2%E4%B8%BAstandalone%E7%AD%89%E7%AD%89">rconfig的功能除了单机转换为RAC，还可以单机转换为Standalone，Standalone转换为RAC，RAC转换为Standalone等等。</a></li>
+</ul>
+
+                            </div>
+                            
+                                
+                                    
+                                        <!--en-->
+                                        <section class="post-copyright en">
+                                            <p class="copyright-item">
+                                                <span>Author:</span>
+                                                <span>老黄的养生会所</span>
+                                            </p>
+
+                                            <p class="copyright-item">
+                                                <span>Permalink:</span>
+                                                <span><a href="https://hkxtor.github.io/eP0H2Pm3z/">https://hkxtor.github.io/eP0H2Pm3z/</a></span>
+                                            </p>
+
+                                            <p class="copyright-item">
+                                                <span>License:</span>
+                                                <span>MIT License</span>
+                                            </p>
+                                        </section>
+                                        
                                                 
+                                                    
+                                                        <!-- Share-->
+                                                        <span style="margin-right:15px">
+                                                    <i class="post-share"></i>
+                                                    <span>Share:</span>
+                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/eP0H2Pm3z/"><i class="fa fa-qrcode"></i></a>
+                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/eP0H2Pm3z/&sharesource=qzone&title=11.2单机数据库转换为RAC -- 使用rconfig&pics=https://hkxtor.github.io/images/avatar.png?v=1604631983690&summary="><i class="fa fa-qq"></i></a>
+                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/eP0H2Pm3z/&sharesource=weibo&title=11.2单机数据库转换为RAC -- 使用rconfig + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1604631983690 "><i class="fa fa-weibo "></i></a>
                                                         
+                                                                </span>
+                                                                <!--en-->
+                                                                <section class="post-tags en ">
+                                                                    <div>
+                                                                        <span>Tag(s):</span>
+                                                                        <span class="tag ">
+                        
+                        
+                        <a href="https://hkxtor.github.io/MurwNIHFZ/">#
+                                                迁移
+                                                    </a>
+                                                    
+                        <a href="https://hkxtor.github.io/UhtfwpcK7/">#
+                                                oracle
+                                                    </a>
+                                                    
+                                                        
+                                                            </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <a href="javascript:window.history.back();">back</a>
+                                                                        <span>&dot;</span>
+                                                                        <a href="#">home</a>
+                                                                    </div>
+                                                                </section>
                                                                 
-                    </div>
+                                                                                <!---->
+                                                                                <section class="post-nav">
+                                                                                    
+                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/0k4Pjffz5/">
+                                                                                            Mysql 长事务处理
+                                                                                        </a>
+                                                                                        
+                                                                                            
+                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/1VMe2UNvc/">
+                                                                                                    MySQL体系结构与管理
+                                                                                                </a>
+                                                                                                
+                                                                                </section>
+                    </article>
                 </div>
+                
+
             </div>
+    </div>
+    </div>
     </div>
     
     <div id="player"></div>
@@ -397,5 +450,8 @@
                 
         </div>
 </body>
+<script>
+    scroll();
+</script>
 
 </html>

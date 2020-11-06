@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-08-20T09:14:02.487Z</updated>
+    <updated>2020-11-06T03:06:35.717Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -444,6 +444,56 @@ MySQL连kill SQL 语句都提供了
 
 通过innodb_lock_waits你只能看到被lock的语句，但是看不到是哪个query语句拥有的锁，如果幸运的话，可以看到上述的案例中 current_statement，last_statement 得到答案。
 即便没有找到那条query，也不妨碍你解决当前的问题哈
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[11.2单机数据库转换为RAC -- 使用rconfig]]></title>
+        <id>https://hkxtor.github.io/eP0H2Pm3z/</id>
+        <link href="https://hkxtor.github.io/eP0H2Pm3z/">
+        </link>
+        <updated>2018-11-06T03:04:51.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="rconfig的功能除了单机转换为rac还可以单机转换为standalonestandalone转换为racrac转换为standalone等等">rconfig的功能除了单机转换为RAC，还可以单机转换为Standalone，Standalone转换为RAC，RAC转换为Standalone等等。</h1>
+<p>配置文件如下</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;n:RConfig xmlns:n=&quot;http://www.oracle.com/rconfig&quot;
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+           xsi:schemaLocation=&quot;http://www.oracle.com/rconfig rconfig.xsd&quot;&gt;
+    &lt;n:ConvertToRAC&gt;   
+&lt;!-- Verify does a precheck to ensure all pre-requisites are met, before the conversion is attempted. Allowable values are: YES|NO|ONLY --&gt;
+        &lt;n:Convert verify=&quot;YES&quot;&gt;
+&lt;!--Specify current OracleHome of non-rac database for SourceDBHome --&gt;
+              &lt;n:SourceDBHome&gt;/u01/app/oracle/product/11.2.0/db_1&lt;/n:SourceDBHome&gt;
+&lt;!--Specify OracleHome where the rac database should be configured. It can be same as SourceDBHome --&gt;
+              &lt;n:TargetDBHome&gt;/u01/app/oracle/product/11.2.0/db_1&lt;/n:TargetDBHome&gt;
+&lt;!--Specify SID of non-rac database and credential. User with sysdba role is required to perform conversion --&gt;
+              &lt;n:SourceDBInfo SID=&quot;test&quot;&gt;
+                &lt;n:Credentials&gt;
+                  &lt;n:User&gt;sys&lt;/n:User&gt;
+                  &lt;n:Password&gt;Oracle123&lt;/n:Password&gt;
+                  &lt;n:Role&gt;sysdba&lt;/n:Role&gt;
+                &lt;/n:Credentials&gt;
+              &lt;/n:SourceDBInfo&gt;
+&lt;!--Specify the list of nodes that should have rac instances running for the Admin Managed Cluster Database. LocalNode should be the first node in this nodelist. --&gt;
+              &lt;n:NodeList&gt;        
+                &lt;n:Node name=&quot;rac1&quot;/&gt;
+                &lt;n:Node name=&quot;rac2&quot;/&gt;
+              &lt;/n:NodeList&gt;
+&lt;!--Specify RacOneNode along with servicename to convert database to RACOne Node --&gt;
+              &lt;!--n:RacOneNode  servicename=&quot;salestestservice&quot;/--&gt;
+&lt;!--Instance Prefix tag is optional starting with 11.2. If left empty, it is derived from db_unique_name.--&gt;
+              &lt;n:InstancePrefix&gt;test&lt;/n:InstancePrefix&gt;
+&lt;!-- Listener details are no longer needed starting 11.2. Database is registered with default listener and SCAN listener running from Oracle Grid Infrastructure home. --&gt;
+&lt;!--Specify the type of storage to be used by rac database. Allowable values are CFS|ASM. The non-rac database should have same storage type. ASM credentials are no needed for conversion. --&gt;
+              &lt;n:SharedStorage type=&quot;ASM&quot;&gt;
+&lt;!--Specify Database Area Location to be configured for rac database.If this field is left empty, current storage will be used for rac database. For CFS, this field will have directory path. --&gt;
+                &lt;n:TargetDatabaseArea&gt;+DATADG1&lt;/n:TargetDatabaseArea&gt;  # 如果已经转成使用asm，则留空，否则会使用rman进行backup as copy database的操作，消耗更多空间
+&lt;!--Specify Fast Recovery Area to be configured for rac database. If this field is left empty, current recovery area of non-rac database will be configured for rac database. If current database is not using recovery Area, the resulting rac database will not have a recovery area. --&gt;
+                &lt;n:TargetFlashRecoveryArea&gt;+DATADG1&lt;/n:TargetFlashRecoveryArea&gt; # 如果已经转成使用asm，则留空，否则会使用rman进行backup as copy database的操作，消耗更多空间
+              &lt;/n:SharedStorage&gt;
+        &lt;/n:Convert&gt;
+    &lt;/n:ConvertToRAC&gt;
+&lt;/n:RConfig&gt;
 </code></pre>
 ]]></content>
     </entry>
@@ -1441,16 +1491,6 @@ wait counts: calls=0 os=0
 </ol>
 <h1 id="4-总结">4. 总结</h1>
 <pre><code>本文的目标不是为了排查IO变慢的原因，而是为了如何寻找判定IO慢的证据。如果性能变差，那么IO慢可能成为性能问题的一个潜在原因，需要从数据库角度来分析如何采集支持的证据；如果潜在原因是由于操作系统级别的IO慢，那么负责IO子系统工程师需要参与进来诊断和修复这个问题。</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[awr相关]]></title>
-        <id>https://hkxtor.github.io/EbXXvFfvd/</id>
-        <link href="https://hkxtor.github.io/EbXXvFfvd/">
-        </link>
-        <updated>2017-06-29T08:15:03.000Z</updated>
-        <content type="html"><![CDATA[<p>AWR Snapshots Are Not Generated due to ORA-12751 (文档 ID 2243670.1)</p>
-<p>AWR Auto Flush Action Timeout at Insert Into WRH$_SERVICE_STAT (文档 ID 2294282.1)</p>
 ]]></content>
     </entry>
 </feed>
