@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-11-06T03:06:35.717Z</updated>
+    <updated>2020-11-06T03:18:33.564Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
@@ -453,8 +453,9 @@ MySQL连kill SQL 语句都提供了
         <link href="https://hkxtor.github.io/eP0H2Pm3z/">
         </link>
         <updated>2018-11-06T03:04:51.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="rconfig的功能除了单机转换为rac还可以单机转换为standalonestandalone转换为racrac转换为standalone等等">rconfig的功能除了单机转换为RAC，还可以单机转换为Standalone，Standalone转换为RAC，RAC转换为Standalone等等。</h1>
-<p>配置文件如下</p>
+        <content type="html"><![CDATA[<h1 id="简介">简介</h1>
+<p>rconfig的功能除了单机转换为RAC，还可以单机转换为Standalone，Standalone转换为RAC，RAC转换为Standalone等等。</p>
+<h1 id="配置文件">配置文件</h1>
 <pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;n:RConfig xmlns:n=&quot;http://www.oracle.com/rconfig&quot;
            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
@@ -494,6 +495,12 @@ MySQL连kill SQL 语句都提供了
         &lt;/n:Convert&gt;
     &lt;/n:ConvertToRAC&gt;
 &lt;/n:RConfig&gt;
+</code></pre>
+<h1 id="用法">用法</h1>
+<pre><code>rconfig test.xml
+</code></pre>
+<h1 id="对应日志">对应日志</h1>
+<pre><code>$ORACLE_BASE/cfgtoollogs/rconfig/
 </code></pre>
 ]]></content>
     </entry>
