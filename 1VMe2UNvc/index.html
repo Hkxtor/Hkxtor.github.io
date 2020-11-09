@@ -1,202 +1,100 @@
-<!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8" />
-<title>
-    老黄的养生会所
-</title>
-<!--[if lt IE 9]><script src="//cdn.bootcss.com/html5shiv/r29/html5.js"></script><![endif]-->
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-<meta http-equiv="x-dns-prefetch-control" content="on">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-<meta name="author" content="">
-<meta name="description" content="">
-<meta name="keywords" content="">
-<script async src="//instant.page/3.0.0" type="module" defer integrity="sha384-OeDn4XE77tdHo8pGtE1apMPmAipjoxUQ++eeJa6EtJCfHlvijigWiJpD7VDPWXV1"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/itjoker233/Gridea-theme-Chic/assets/media/css/style.min.css" />
-<link rel="stylesheet" href="https://hkxtor.github.io/styles/main.css" />
-<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript" src="https://apps.bdimg.com/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/itjoker233/Gridea-theme-Chic/assets/media/script/tocbot.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/itjoker233/Gridea-theme-Chic/assets/media/script/script.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/itjoker233/Gridea-theme-Chic/assets/media/script/icon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/ITJoker233/ITJoker233.github.io@1.0.12/CDN/js/Card/prism.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ITJoker233/ITJoker233.github.io@1.0.12/CDN/css/Card/prism.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js"></script>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <!--点击特效-->
-    <script src="https://cdn.jsdelivr.net/gh/ITJoker233/ITJoker233.github.io@latest/CDN/js/love.min.js"></script>
-    
-        <script src="https://cdn.jsdelivr.net/gh/itjoker233/Gridea-theme-Chic@latest/assets/media/script/APlayer.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
-        
-            <!--CDN样式-->
-            <script src="https://cdn.jsdelivr.net/gh/ITJoker233/ITJoker233.github.io@latest/CDN/js/hit-kounter-lc-0.3.0.js"></script>
-            <script src="https://cdn1.lncld.net/static/js/av-min-1.5.0.js"></script>
-            
-                <script>
-                    (function() {
-                        var bp = document.createElement('script');
-                        var curProtocol = window.location.protocol.split(':')[0];
-                        if (curProtocol === 'https') {
-                            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-                        } else {
-                            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-                        }
-                        var s = document.getElementsByTagName("script")[0];
-                        s.parentNode.insertBefore(bp, s);
-                    })();
-                </script>
-                
+<title>MySQL体系结构与管理 | 老黄的养生会所</title>
+
+<link rel="shortcut icon" href="https://hkxtor.github.io/favicon.ico?v=1604888065280">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://hkxtor.github.io/styles/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
-
 <body>
-    <div class="wrapper">
-        <header>
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-header header-logo">
-                <a href="https://hkxtor.github.io">
-                    老黄的养生会所
-                </a>
-            </div>
-
-            <div class="menu navbar-right">
-                
-                    <a class="menu-item" href="/">
-                        首页
-                    </a>
-                    
-                    <a class="menu-item" href="/archives">
-                        归档
-                    </a>
-                    
-                    <a class="menu-item" href="/tags">
-                        标签
-                    </a>
-                    
-                    <a class="menu-item" href="/posts">
-                        文章列表
-                    </a>
-                    
-                        <input id="switch_default" type="checkbox" class="switch_default">
-                        <label for="switch_default" class="toggleBtn"></label>
-            </div>
-            <form id="gridea-search-form" data-update="1604632708836" action="/search/index.html">
-                <input class="search-input" autocomplete="off" spellcheck="false" name="q" autofocus="true" placeholder="Search...">
-            </form>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            老黄的养生会所
         </div>
-    </nav>
-
-    
-        <nav class="navbar-mobile" id="nav-mobile">
-            <div class="container">
-                <div class="navbar-header">
-                    <div>
-                        <a href="https://hkxtor.github.io">
-                            老黄的养生会所
-                        </a>
-                        <!--en-->
-                        <a id="mobile-toggle-theme-en" class="a en">&nbsp;Dark</a>
-                        <!--zh-->
-                        <a id="mobile-toggle-theme-zh" class="a zh">&nbsp;&#x6697;&#x9ED1;</a>
-                    </div>
-                    <form id="gridea-search-form" data-update="1604632708836" action="/search/index.html">
-                        <input class="search-input" autocomplete="off" spellcheck="false" name="q" autofocus="true" placeholder="Search...">
-                    </form>
-                    <!--en-->
-                    <div class="menu-toggle" id="menu-toggle-en" onclick="mobileBtn()">&#9776; Menu</div>
-                    <!--zh-->
-                    <div class="menu-toggle" id="menu-toggle-zh" onclick="mobileBtn()">&#9776; &#x83DC;&#x5355;</div>
-
-                </div>
-                <div class="menu" id="mobile-menu">
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
                     
-                        <a class="menu-item" href="/">
+                        <a href="/" class="menu gt-a-link">
                             首页
                         </a>
-                        
-                        <a class="menu-item" href="/archives">
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
                             归档
                         </a>
-                        
-                        <a class="menu-item" href="/tags">
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
                             标签
                         </a>
-                        
-                        <a class="menu-item" href="/posts">
-                            文章列表
-                        </a>
-                        
+                    
                 </div>
-            </div>
-        </nav>
-</header>
-<script>
-    var mobileBtn = function f() {
-        var toggleMenu = document.getElementById("menu-toggle-en");
-        var toggleMenu_zh = document.getElementById("menu-toggle-zh");
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1604888065280" action="/search/index.html">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
 
-        var mobileMenu = document.getElementById("mobile-menu");
-        if (toggleMenu.display != "none") {
-            if (toggleMenu.classList.contains("active")) {
-                toggleMenu.classList.remove("active")
-                mobileMenu.classList.remove("active")
-            } else {
-                toggleMenu.classList.add("active")
-                mobileMenu.classList.add("active")
-            }
-        } else if (toggleMenu_zh.display != "none") {
-            if (toggleMenu_zh.classList.contains("active")) {
-                toggleMenu_zh.classList.remove("active")
-                mobileMenu.classList.remove("active")
-            } else {
-                toggleMenu_zh.classList.add("active")
-                mobileMenu.classList.add("active")
-            }
-        }
-
-    }
-</script>
-            <div class="main">
-                <div class="container">
-                    <article class="post-wrap">
-                        <header class="post-header">
-                            <h1 class="post-title">
-                                MySQL体系结构与管理
-                            </h1>
-                            
-                                <!--en-->
-                                <div class="post-meta en">
-                                    Author:
-                                    <a itemprop="author" rel="author" href="/">
-                                        老黄的养生会所
-                                    </a>
-                                    <span class="post-time">
-                                Date: <a href="#">2018-04-27</a>
-                            </span>
-                                    <span class="post-readtime">Reading Time:<a
-                                    href="#">9.7
-                                    mins</a></span>
-                                    <span class="post-words">words:<a href="#">2058</a></span>
-                                    
-                                        <span class="post-category">
-                                Category:
-                                
-                                <a href="https://hkxtor.github.io/3LgO6i0X_/">mysql</a>
-                                
-                            </span>
-                                        
-                                            Views:
-                                            <span data-hk-page="current"> - </span>
-                                            
-                                </div>
-                                
-                        </header>
-                        <div class="post-content">
-                            <h1 id="1体系结构">1.体系结构</h1>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    MySQL体系结构与管理
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2018-04-27 ·
+                    </time>
+                    
+                        <a href="https://hkxtor.github.io/3LgO6i0X_/" class="post-tags">
+                            # mysql
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="1体系结构">1.体系结构</h1>
 <h2 id="11-cs模型">1.1 C/S模型</h2>
 <pre><code>TCP/IP方式（远程、本地）：
 mysql -uroot -123456 -h 10.0.0.51 -P3306
@@ -486,271 +384,56 @@ mysqld --initialize-insecure  --user=mysql --datadir=/data/3308/data --basedir=/
 mysqld --initialize-insecure  --user=mysql --datadir=/data/3309/data --basedir=/app/mysql
 </code></pre>
 
-                        </div>
-                        
-                            <div class="post-toc">
-                                <ul class="markdownIt-TOC">
-<li><a href="#1%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84">1.体系结构</a>
-<ul>
-<li><a href="#11-cs%E6%A8%A1%E5%9E%8B">1.1 C/S模型</a></li>
-<li><a href="#12-%E5%AE%9E%E4%BE%8B">1.2 实例</a></li>
-<li><a href="#13-mysqld">1.3 mysqld</a>
-<ul>
-<li><a href="#131-mysqld%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84">1.3.1 mysqld程序结构</a>
-<ul>
-<li><a href="#1311-%E8%BF%9E%E6%8E%A5%E5%B1%82">1.3.1.1 连接层</a></li>
-<li><a href="#1312-sql%E5%B1%82">1.3.1.2 SQL层</a></li>
-<li><a href="#1313-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%B1%82">1.3.1.3 存储引擎层</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#14-%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84">1.4 逻辑结构</a>
-<ul>
-<li><a href="#141-%E5%BA%93">1.4.1 库</a></li>
-<li><a href="#142-%E8%A1%A8%E4%BA%8C%E7%BB%B4%E8%A1%A8">1.4.2 表（二维表）</a></li>
-</ul>
-</li>
-<li><a href="#15-%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84">1.5 物理结构</a>
-<ul>
-<li><a href="#151-%E5%BA%93%E7%9A%84%E7%89%A9%E7%90%86%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84">1.5.1 库的物理存储结构</a></li>
-<li><a href="#152-%E8%A1%A8%E7%9A%84%E7%89%A9%E7%90%86%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84">1.5.2 表的物理存储结构</a></li>
-<li><a href="#153-%E8%A1%A8%E7%9A%84%E6%AE%B5-%E5%8C%BA-%E9%A1%B5">1.5.3 表的段、区、页</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#2-%E5%9F%BA%E7%A1%80%E7%AE%A1%E7%90%86">2. 基础管理</a>
-<ul>
-<li><a href="#21-%E7%94%A8%E6%88%B7-%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86">2.1 用户、权限管理</a>
-<ul>
-<li><a href="#211-%E7%94%A8%E6%88%B7">2.1.1 用户</a></li>
-<li><a href="#212-%E6%9D%83%E9%99%90">2.1.2 权限</a></li>
-</ul>
-</li>
-<li><a href="#22-%E8%BF%9E%E6%8E%A5%E7%AE%A1%E7%90%86">2.2 连接管理</a>
-<ul>
-<li><a href="#221-%E8%87%AA%E5%B8%A6%E5%AE%A2%E6%88%B7%E7%AB%AF">2.2.1 自带客户端</a></li>
-</ul>
-</li>
-<li><a href="#24-%E5%88%9D%E5%A7%8B%E5%8C%96%E9%85%8D%E7%BD%AE">2.4 初始化配置</a>
-<ul>
-<li><a href="#241-%E4%BD%9C%E7%94%A8">2.4.1 作用</a></li>
-<li><a href="#242-%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E6%96%B9%E6%B3%95">2.4.2 初始化的方法</a></li>
-<li><a href="#243-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">2.4.3 配置文件</a></li>
-</ul>
-</li>
-<li><a href="#25-%E5%A4%9A%E5%AE%9E%E4%BE%8B">2.5 多实例</a>
-<ul>
-<li><a href="#251-%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE%E7%9B%AE%E5%BD%95">2.5.1 准备数据目录</a></li>
-<li><a href="#252-%E5%87%86%E5%A4%87%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">2.5.2 准备配置文件</a></li>
-<li><a href="#253-%E5%88%86%E5%88%AB%E5%88%9D%E5%A7%8B%E5%8C%96">2.5.3 分别初始化</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-                            </div>
-                            
-                                
-                                    
-                                        <!--en-->
-                                        <section class="post-copyright en">
-                                            <p class="copyright-item">
-                                                <span>Author:</span>
-                                                <span>老黄的养生会所</span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>Permalink:</span>
-                                                <span><a href="https://hkxtor.github.io/1VMe2UNvc/">https://hkxtor.github.io/1VMe2UNvc/</a></span>
-                                            </p>
-
-                                            <p class="copyright-item">
-                                                <span>License:</span>
-                                                <span>MIT License</span>
-                                            </p>
-                                        </section>
-                                        
-                                                
-                                                    
-                                                        <!-- Share-->
-                                                        <span style="margin-right:15px">
-                                                    <i class="post-share"></i>
-                                                    <span>Share:</span>
-                                                        <a title="QR Code" target="_blank" href="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hkxtor.github.io/1VMe2UNvc/"><i class="fa fa-qrcode"></i></a>
-                                                        <a title="QQ" target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://hkxtor.github.io/1VMe2UNvc/&sharesource=qzone&title=MySQL体系结构与管理&pics=https://hkxtor.github.io/images/avatar.png?v=1604632708836&summary="><i class="fa fa-qq"></i></a>
-                                                        <a title="Weibo" target="_blank" href="https://service.weibo.com/share/share.php?url=https://hkxtor.github.io/1VMe2UNvc/&sharesource=weibo&title=MySQL体系结构与管理 + " - " + &pic="https://hkxtor.github.io/images/avatar.png?v=1604632708836 "><i class="fa fa-weibo "></i></a>
-                                                        
-                                                                </span>
-                                                                <!--en-->
-                                                                <section class="post-tags en ">
-                                                                    <div>
-                                                                        <span>Tag(s):</span>
-                                                                        <span class="tag ">
-                        
-                        
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/">#
-                                                mysql
-                                                    </a>
-                                                    
-                                                        
-                                                            </span>
-                                                                    </div>
-                                                                    <div>
-                                                                        <a href="javascript:window.history.back();">back</a>
-                                                                        <span>&dot;</span>
-                                                                        <a href="#">home</a>
-                                                                    </div>
-                                                                </section>
-                                                                
-                                                                                <!---->
-                                                                                <section class="post-nav">
-                                                                                    
-                                                                                        <a class="prev" rel="prev" href="https://hkxtor.github.io/eP0H2Pm3z/">
-                                                                                            11.2单机数据库转换为RAC -- 使用rconfig
-                                                                                        </a>
-                                                                                        
-                                                                                            
-                                                                                                <a class="next" rel="next" href="https://hkxtor.github.io/qulIB3Rk0/">
-                                                                                                    12c可插拔数据库的几种克隆迁移方法
-                                                                                                </a>
-                                                                                                
-                                                                                </section>
-                    </article>
                 </div>
-                
-
-            </div>
-    </div>
-    </div>
-    </div>
-    
-    <div id="player"></div>
-    
-        <footer id="footer" class="footer">
-            <div class="copyright">
-                
-                    <div class="Like">
-                        <div class="tip" data-tooltip="Do you like it?">
-                            <a href="https://github.com/ITJoker233/Gridea-theme-Chic" target="_blank" title=""><svg class="icon"
-                        aria-hidden="true">
-                        <use xlink:href="#like"></use>
-                    </svg><b class="like_text" id="star"></b></a>
-                        </div>
-                    </div>
-                    
-                        
-                            
-                                <b id="hitokoto"></b><br>
-                                
-                                        <svg viewBox="0 0 1024 1024" style="margin-left: 5px;margin-right: 5px;" version="1.0" width="8" height="8" class="my-face">
-            <path
-                d="M863.597631 513.574282l-271.33965-140.213484L729.783667 81.926656c3.583731-7.87141 7.167462-15.742819 7.167462-25.214109C736.887134 25.226908 708.345275 0.012799 672.635953 0.012799a63.611229 63.611229 0 0 0-39.293053 12.607055c-1.791866 1.59988-3.519736 3.19976-5.311602 3.19976L147.87531 418.925381a55.547834 55.547834 0 0 0-19.646527 47.356448c1.791866 17.278704 14.27093 33.021523 32.125591 42.492813l271.33965 141.749369L292.504463 945.221908c-12.479064 25.214109-1.791866 53.563983 23.166262 69.306802 10.751194 6.335525 23.230258 9.47129 35.709322 9.47129 16.062795 0 32.125591-4.735645 44.604655-15.742819l480.091993-403.297753a55.547834 55.547834 0 0 0 19.646526-47.228458 61.243407 61.243407 0 0 0-32.12559-44.156688z"
-                fill="#93b5cf"></path>
-        </svg>
-                                        老黄的养生会所 &copy;Copyright
-                                            <script>
-                                                var date = new Date();
-                                                document.write("" + date.getFullYear());
-                                            </script>
-                                            | Powered by
-                                            <a href="https://github.com" target="_blank">
-                                                GitHub
-                                            </a>
-            </div>
-            <div id="update" style="display:none;">
-                on
-            </div>
-            
-                <div id="version" style="display:none;">
-                    1.7.3
-                </div>
-                
-                    <script>
-                        var pat = '';
-                        
-                        document.write('<div id="home_path" style="display:none;">' + document.location.protocol + '//' + window.document.location.hostname + pat + '</div>')
-                    </script>
-        </footer>
-        
-            <script src='https://cdn.jsdelivr.net/npm/live2d-widget@3.x/lib/L2Dwidget.min.js'></script>
-            
-                <script>
-                    
-
-                    function LoadPlayer() {
-                        var music_array = [];
-                        
-                        music_array.push({
-                            name: 'Good Day To Love',
-                            url: 'https://link.hhtjim.com/qq/001n5mov1yO1is.mp3',
-                            artist: 'Wyne',
-                            cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000003iVVQ90tmz1L_1.jpg?max_age=2592000',
-                        });
-                        
-                        music_array.push({
-                            name: 'Chronos',
-                            url: 'https://freepd.com/music/Chronos.mp3',
-                            artist: 'Alexander Nakarada',
-                            cover: '',
-                        });
-                        
-                        music_array.push({
-                            name: 'Favorite',
-                            url: 'https://freepd.com/music/Favorite.mp3',
-                            artist: 'Alexander Nakarada',
-                            cover: '',
-                        });
-                        
-                        music_array.push({
-                            name: 'Fireworks',
-                            url: 'https://freepd.com/music/Fireworks.mp3',
-                            artist: 'Alexander Nakarada',
-                            cover: '',
-                        });
-                        
-                        music_array.push({
-                            name: 'Fixx Me',
-                            url: 'https://link.hhtjim.com/qq/0022c7T23YgtAy.mp3',
-                            artist: 'Jukjae',
-                            cover: 'https://y.gtimg.cn/music/photo_new/T002R300x300M000003A0vWP1sG9VK_1.jpg?max_age=2592000',
-                        });
-                        
-                        console.log(" MusicList: " + music_array);
-                        
-                        const ap = new APlayer({
-                            container: document.getElementById('player'),
-                            fixed: true,
-                            audio: music_array
-                        });
-                        
-                    }
-                    LoadPlayer();
-                    
-                    
-                    loadlive2d();
-                    
-                    
-                    hitokoto();
-                    
-                    getStar();
-                    hljs.initHighlighting();
-                    console.clear();
-                    
-                    CheckVersion();
-                    
-                    var newDate = new Date();
-                    newDate.setTime(1604632708836);
-                    console.log(" Blog Update Time: " + newDate.toLocaleDateString());
-                    console.log("\n %c \u26a1Theme:Chic Author's Blog:https://blog.itjoker.cn  Write By ITJoker  \n\n", "color: #ffffff; background: rgba(49, 49, 49, 0.85); padding:5px 0;border-radius:5px;");
-                </script>
-                
+            </article>
         </div>
-</body>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://hkxtor.github.io/qulIB3Rk0/" class="post-title gt-a-link">
+                    12c可插拔数据库的几种克隆迁移方法
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">宁可孤独，也不违心。不入我心者，不屑以敷衍。</div>
+    <div class="social-container">
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://hkxtor.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
 <script>
-    scroll();
+  hljs.initHighlightingOnLoad()
 </script>
 
+    </div>
+</div>
+</body>
 </html>
