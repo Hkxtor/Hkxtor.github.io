@@ -2,14 +2,126 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://hkxtor.github.io</id>
     <title>老黄的养生会所</title>
-    <updated>2020-11-09T06:09:47.203Z</updated>
+    <updated>2021-02-07T03:31:49.566Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://hkxtor.github.io"/>
     <link rel="self" href="https://hkxtor.github.io/atom.xml"/>
     <subtitle>宁可孤独，也不违心。不入我心者，不屑以敷衍。</subtitle>
     <logo>https://hkxtor.github.io/images/avatar.png</logo>
     <icon>https://hkxtor.github.io/favicon.ico</icon>
-    <rights>All rights reserved 2020, 老黄的养生会所</rights>
+    <rights>All rights reserved 2021, 老黄的养生会所</rights>
+    <entry>
+        <title type="html"><![CDATA[19C pdb开启awr以获取数据文件等io信息]]></title>
+        <id>https://hkxtor.github.io/k8frSam77/</id>
+        <link href="https://hkxtor.github.io/k8frSam77/">
+        </link>
+        <updated>2021-02-07T03:30:17.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="现象">现象</h1>
+<pre><code class="language-sql">sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Jan 24 12:50:58 2021
+Version 19.10.0.0.0
+
+Copyright (c) 1982, 2020, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.10.0.0.0
+
+SQL&gt; show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 HKXTOR                         READ WRITE NO
+         4 SJZX                           READ WRITE NO
+SQL&gt; alter session set container=hkxtor
+  2  ;
+
+Session altered.
+
+SQL&gt; show con_name
+
+CON_NAME
+------------------------------
+HKXTOR
+
+SQL&gt; @?/rdbms/admin/awrrpt.sql
+
+Specify the Report Type
+~~~~~~~~~~~~~~~~~~~~~~~
+AWR reports can be generated in the following formats.  Please enter the
+name of the format at the prompt.  Default value is 'html'.
+
+'html'          HTML format (default)
+'text'          Text format
+'active-html'   Includes Performance Hub active report
+
+Enter value for report_type:
+old   1: select 'Type Specified: ',lower(nvl('&amp;&amp;report_type','html')) report_type from dual
+new   1: select 'Type Specified: ',lower(nvl('','html')) report_type from dual
+
+Type Specified:                                  html
+
+
+
+Specify the location of AWR Data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+AWR_ROOT - Use AWR data from root (default)
+AWR_PDB - Use AWR data from PDB
+Enter value for awr_location: AWR_PDB
+
+Location of AWR Data Specified:
+AWR_PDB
+
+
+
+
+
+Current Instance
+~~~~~~~~~~~~~~~~
+DB Id          DB Name        Inst Num       Instance       Container Name
+-------------- -------------- -------------- -------------- --------------
+ 3516530670     CDB                        1 cdb           HKXTOR
+
+
+
+Root DB Id      Container DB Id AWR DB Id
+--------------- --------------- ---------------
+    299079762      3516530670      3516530670
+
+
+
+
+
+
+Instances in this Workload Repository schema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using 3516530670 for database Id
+Using          1 for instance number
+declare
+*
+ERROR at line 1:
+ORA-20200: Database/Instance 3516530670/1 does not exist in
+AWR_PDB_DATABASE_INSTANCE
+ORA-06512: at line 27
+
+
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.10.0.0.0
+</code></pre>
+<h1 id="mos">MOS:</h1>
+<p>ORA-20200 Error When Generating AWR or ADDM Report as a PDB DBA User From a 12.2.0.1 and higher CDB Database (Doc ID 2267849.1)<br>
+Bug 25941188 - ORA-20200 WHEN ADDM REPORT GENERATED FROM A PDB DATABASE USING AWR_PDB OPTION &lt;==closed as duplicate to following internal bug that is still being worked on:<br>
+Bug 27747951 : CDB_MA: ADDMRPT.SQL EXECUTION IN PDB LEVEL</p>
+<h1 id="解决办法">解决办法：</h1>
+<pre><code>ALTER SYSTEM SET awr_pdb_autoflush_enabled= TRUE SID='*' SCOPE=BOTH;
+ALTER SYSTEM SET awr_snapshot_time_offset=1000000 SID='*' SCOPE=BOTH;
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[RushQL勒索病毒的处理]]></title>
         <id>https://hkxtor.github.io/ihIcEuWzN/</id>
@@ -1318,186 +1430,6 @@ BACKUP current   controlfile  format '/home/oracle/backup/control_%d_%T_%u.ctl';
 </ol>
 </li>
 </ol>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[如何判断数据库IO是否慢]]></title>
-        <id>https://hkxtor.github.io/vQKm4MfiK/</id>
-        <link href="https://hkxtor.github.io/vQKm4MfiK/">
-        </link>
-        <updated>2017-10-24T06:22:21.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="1-引言">1. 引言</h1>
-<pre><code>一个项目的数据库响应慢的问题，结论就是操作系统层面上的IO性能差的问题，怎么样才能更有说服力。
-我们一般衡量IO性能主要用两种指标来衡量。
-响应时间：用微秒来测量完成一项操作所需的时间，这个一般由oracle来采集统计。
-吞吐量：以每个单位时间内完成的操作数量来测量。这个一般通过操作系统下的工具来统计，例如iostat。
-本文主要是阐述如何从oracle的角度来确定IO是否慢，不再详细说明吞吐量及其测量方法。
-</code></pre>
-<h1 id="2-怎么才算io慢">2. 怎么才算IO“慢”</h1>
-<pre><code>IO慢是一个很主观的术语，它更多的取决于用户对系统和硬件的预期和实际的差异，这个差异是一个比较主观的感觉，量化到具体性能指标来看，在企业级平台下，当IO请求的响应时间大于10ms时，用户会开始敏感。不过响应时间是会不断变化的，有可能是数据从文件系统迁移到共享存储上，也可能是存储设备出现异常，又或者是业务增长导致的IO性能达到峰值。这就需要通过对响应时间这个指标作出作出多维度的测量。
-</code></pre>
-<h1 id="3-响应时间">3. 响应时间</h1>
-<pre><code>硬件不必对于每个IO请求都有相同的反映。总会有可能出现高峰和低谷。因此使用平均值是一种测量响应时间的通用方法。
-注意：为了减缓这种高峰/低谷的异常场景带来的问题，样例数据量需要比较大。样例数据量应该至少是每小时1000次操作，目的就是为了提供给决测更可信和实用的依据。
-</code></pre>
-<ol>
-<li>
-<p>IO的类型</p>
-<p>平均响应时间直接关联到具体的IO类型：</p>
-<ol>
-<li>读或写</li>
-<li>单块或多块<pre><code>单块IO，指一次只读一个块。例如，当一个session等待一个单块IO时，典型的等待事件就是“db file sequential read”，表明正在等待需要的块。
-多块读指的是一次读多个块，从2到128个Oracle块不等，依赖于块的大小与操作系统设置。通常一个多块请求容量上有1MB的限制。例如当一个session等待一次多块IO时，典型的等待事件就是“db file scattered read”，表明正在等待需要的块。
-</code></pre>
-</li>
-<li>同步或异步<pre><code>同步(阻塞)操作等待硬件完成物理IO，完成后能得到通知，合理地管理操作的成功或失败(成功读的情况下可以接收结果)。当需要等待系统调用结果的时候，进程的执行是被堵塞的。
-对于异步(非阻塞)操作，一旦IO请求传递到硬件，或放入操作系统的队列中(典型的情况是物理IO开始之前)，系统调用会立即返回。进程的执行不会被堵塞，因为它不需要等待系统调用的结果。它能继续执行，当IO操作有结果时再接收。
-</code></pre>
-</li>
-</ol>
-</li>
-<li>
-<p>响应时间的阈值</p>
-<p>一次典型的多块同步读64x 8k(总计512KB)的平均时间应该在未出现IO变慢的情况下大约是20毫秒左右。小请求应该更快(10-20毫秒)，大请求的消耗时间应该不多于25毫秒。异步操作应该至少和同步操作一样快，甚至还要更快。单块读至少应该和多块读一样快，甚至还要更快。“log file parallel write”，“control file write”和“direct path writes“等待时间应该不多于15毫秒。数据文件写的测量不像读那样简单。DBWR以批量的方式(&quot;db file parallel write&quot;)异步写入块，现在还没有写操作响应时间的标准。如果DBWR(多块或单块，带或不带IO salves)足够快速能够清理脏块，那么其他的等待事件和统计信息就会显露出来。作为规则，超过上述等待事件时间的等待事件都应该详细分析，当对比之前的时间消耗，有明显变化时更需要知晓。</p>
-<h4 id="注意当系统低于这些最大阈值的时候并不意味着没有其他的调优方法">注意：当系统低于这些最大阈值的时候，并不意味着没有其他的调优方法。</h4>
-<p>响应时间因系统而有所不同。例如，接下来的几项内容可以看做是正常平均值：</p>
-<ol>
-<li>多块同步读时间是10毫秒。</li>
-<li>单块同步读时间是5毫秒。</li>
-<li>'log file parallel write'时间是3毫秒。</li>
-</ol>
-<p><em><strong>以上是基于多块IO比单块IO需要更多的IO子系统资源的前提。如果接受这些建议，redo日志最好放在最快的磁盘，并且没有其它并发活动的争用。</strong></em></p>
-<p>以下是各IO相关等待事件的响应时间阈值：</p>
-<table>
-<thead>
-<tr>
-<th>Wait Event</th>
-<th style="text-align:right">R/W</th>
-<th>Synchronous/ Asynchronous</th>
-<th>Singleblock/ Multiblock</th>
-<th>Elapsed Time</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>control file parallel write</td>
-<td style="text-align:right">Write</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 15ms</td>
-</tr>
-<tr>
-<td>control file sequential read</td>
-<td style="text-align:right">Read</td>
-<td>Synchronous</td>
-<td>Single</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>db file parallel read</td>
-<td style="text-align:right">Read</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>db file scattered read</td>
-<td style="text-align:right">Read</td>
-<td>Synchronous</td>
-<td>Multi</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>db file sequential read</td>
-<td style="text-align:right">Read</td>
-<td>Synchronous</td>
-<td>Single</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>direct path read</td>
-<td style="text-align:right">Read</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>direct path read temp</td>
-<td style="text-align:right">Read</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 20 ms</td>
-</tr>
-<tr>
-<td>direct path write</td>
-<td style="text-align:right">Write</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 15 ms</td>
-</tr>
-<tr>
-<td>direct path write temp</td>
-<td style="text-align:right">Write</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 15 ms</td>
-</tr>
-<tr>
-<td>log file parallel write</td>
-<td style="text-align:right">Write</td>
-<td>Asynchronous</td>
-<td>Multi</td>
-<td>&lt; 15 ms</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<p>确定响应时间的途径</p>
-<ol>
-<li>
-<p>10046 trace file</p>
-<pre><code>当在10046 trace中使用level 8或12时，会包含相关的等待事件的信息，响应时间是ela字段，单位是微秒。
-WAIT #5: nam='cell single block physical read' ela= 672 cellhash#=2520626383 diskhash#=1377492511 bytes=16384 obj#=63 tim=1280416903276618
-&gt;&gt; 672 microseconds = 0.672 ms
-WAIT #5: nam='db file sequential read' ela= 1018 file#=2 block#=558091 blocks=1 obj#=0 tim=10191852599110
-&gt;&gt; 1018 microseconds =&gt; 1.018 ms
-</code></pre>
-</li>
-<li>
-<p>System State Dump</p>
-<pre><code>对于每个系统级的进程，等待信息包括在进程信息中。通常显示一个活动的waiting for，或者等待完成，进程正在CPU中执行waited for/last wait for。
-其中waiting for表示进程处于等待状态。11g之前可以查看seconds since wait started字段，显示进程已经等待多久了。从11gR1开始，”total“字段显示等待的时间。 如果waiting for显示一个进程正在等待一个IO相关的操作，seconds since wait started&gt;0，表示可能IO丢失，session处于hang状态。(因为之前提到过平均可接受时间是20毫秒，任何IO等待时间超过1秒都需要关注)。
-last wait for是与11g之前的版本相关的，表明进程不在等待(例如正在使用CPU)。等待时间记录到”wait_time“字段。(11g中wait_time被not in wait替代)
-
-last wait for 'db file sequential read' blocking sess=0x0 seq=100 wait_time=2264 seconds since wait started=0 file#=45, block#=17a57, blocks=1
-&gt;&gt; 2264 microseconds =&gt; 2.264 ms
-
-waited for表示session不在等待。通常是11gR1以后的系统级trace中使用。total字段表示等待的总时间。
-0: waited for 'db file sequential read' file#=9, block#=46526, blocks=1
-wait_id=179 seq_num=180 snap_id=1
-wait times: snap=0.007039 sec, exc=0.007039 sec, total=0.007039 sec
-wait times: max=infinite
-wait counts: calls=0 os=0
-&gt;&gt; 0.007039 sec =&gt; 7.039 ms
-</code></pre>
-</li>
-<li>
-<p>Statspack 与AWR reports</p>
-<p>前台进程和后台进程的等待事件，平均响应时间通过Wait Avg(ms)反映(以毫秒计算的平均读)。<br>
-<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/20200429135701.png" alt="" loading="lazy"><br>
-<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429140538.png" alt="" loading="lazy"></p>
-<p>表空间IO<br>
-平均响应时间通过Av Rd (ms)反映(以毫秒计算的平均读)。<br>
-<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429140822.png" alt="" loading="lazy"></p>
-<p>等待事件直方图可以提供组成这些平均值的写操作时间分布。他会展示出所有写操作都接近于平均值，还是会有若干波峰或波谷的情况。每列都表明每个bucket之间等待事件时间分布的百分比。例如，&lt;16ms的等待大于&lt;8ms。只要最大的百分比是从&lt;1ms到16ms的范围内，那么IO性能通常就可以接受。<br>
-<img src="https://cdn.jsdelivr.net/gh/Hkxtor/picb/img/20200429141013.png" alt="" loading="lazy"></p>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="4-总结">4. 总结</h1>
-<pre><code>本文的目标不是为了排查IO变慢的原因，而是为了如何寻找判定IO慢的证据。如果性能变差，那么IO慢可能成为性能问题的一个潜在原因，需要从数据库角度来分析如何采集支持的证据；如果潜在原因是由于操作系统级别的IO慢，那么负责IO子系统工程师需要参与进来诊断和修复这个问题。</code></pre>
 ]]></content>
     </entry>
 </feed>

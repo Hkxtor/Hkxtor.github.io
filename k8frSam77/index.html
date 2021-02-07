@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-<title>Mysql 长事务处理 | 老黄的养生会所</title>
+<title>19C pdb开启awr以获取数据文件等io信息 | 老黄的养生会所</title>
 
 <link rel="shortcut icon" href="https://hkxtor.github.io/favicon.ico?v=1612668704096">
 
@@ -81,89 +81,122 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    Mysql 长事务处理
+                    19C pdb开启awr以获取数据文件等io信息
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2019-06-26 ·
+                        · 2021-02-07 ·
                     </time>
                     
-                        <a href="https://hkxtor.github.io/-PpndQcSe/" class="post-tags">
-                            # 故障
-                        </a>
-                    
-                        <a href="https://hkxtor.github.io/3LgO6i0X_/" class="post-tags">
-                            # mysql
+                        <a href="https://hkxtor.github.io/UhtfwpcK7/" class="post-tags">
+                            # oracle
                         </a>
                     
                 </div>
                 <div class="post-content">
-                    <h1 id="1-背景">1. 背景</h1>
-<pre><code>1. 某个SQL执行特别慢，导致整个transaction一直处于running阶段
-2. 某个Session的SQL已经执行完了，但是迟迟没有commit，一直处于sleep阶段
-3. 某个Session处于lock wait阶段，迟迟没有结束
-4. 以上，大部分原因都是大事务导致的，怎么处理呢
-</code></pre>
-<h1 id="2-大事务的特征">2. 大事务的特征</h1>
-<pre><code>1. transaction开启到结束的时间非常长
-2. 正在执行的事务
-3. 未提交的事务
-</code></pre>
-<h2 id="21-监控那些正在执行的事务">2.1 监控那些正在执行的事务</h2>
-<pre><code class="language-sql">select * from sys.processlist;
-show processlist;
-select * from information_schema.processlist;
-select * from sys.session;
-select * from information_schema.innodb_trx;
-select * from performance_schema.events_statements_current;
-</code></pre>
-<h2 id="22-如何监控那些未提交的事务">2.2 如何监控那些未提交的事务</h2>
-<pre><code class="language-sql">select * from information_schema.innodb_trx
+                    <h1 id="现象">现象</h1>
+<pre><code class="language-sql">sqlplus / as sysdba
 
-如何两者结合
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Jan 24 12:50:58 2021
+Version 19.10.0.0.0
 
-select trx_id,INNODB_TRX.trx_state,INNODB_TRX.trx_started,se.conn_id as processlist_id,trx_lock_memory_bytes,se.user,se.command,se.state,se.current_statement,se.last_statement from information_schema.INNODB_TRX,sys.session as se where trx_mysql_thread_id=conn_id;
-+---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
-| trx_id  | trx_state | trx_started         | processlist_id | trx_lock_memory_bytes | user | command | state    | current_statement                   | last_statement                      |
-+---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
-| 1592104 | LOCK WAIT | 2019-06-26 11:51:17 |              3 |                  1136 | NULL | Query   | updating | update test_1 set id=4 where id = 1 | NULL                                |
-| 1592100 | RUNNING   | 2019-06-26 11:49:08 |              2 |                  1136 | NULL | Sleep   | NULL     | NULL                                | update test_1 set id=3 where id = 1 |
-+---------+-----------+---------------------+----------------+-----------------------+------+---------+----------+-------------------------------------+-------------------------------------+
+Copyright (c) 1982, 2020, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.10.0.0.0
+
+SQL&gt; show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 HKXTOR                         READ WRITE NO
+         4 SJZX                           READ WRITE NO
+SQL&gt; alter session set container=hkxtor
+  2  ;
+
+Session altered.
+
+SQL&gt; show con_name
+
+CON_NAME
+------------------------------
+HKXTOR
+
+SQL&gt; @?/rdbms/admin/awrrpt.sql
+
+Specify the Report Type
+~~~~~~~~~~~~~~~~~~~~~~~
+AWR reports can be generated in the following formats.  Please enter the
+name of the format at the prompt.  Default value is 'html'.
+
+'html'          HTML format (default)
+'text'          Text format
+'active-html'   Includes Performance Hub active report
+
+Enter value for report_type:
+old   1: select 'Type Specified: ',lower(nvl('&amp;&amp;report_type','html')) report_type from dual
+new   1: select 'Type Specified: ',lower(nvl('','html')) report_type from dual
+
+Type Specified:                                  html
+
+
+
+Specify the location of AWR Data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+AWR_ROOT - Use AWR data from root (default)
+AWR_PDB - Use AWR data from PDB
+Enter value for awr_location: AWR_PDB
+
+Location of AWR Data Specified:
+AWR_PDB
+
+
+
+
+
+Current Instance
+~~~~~~~~~~~~~~~~
+DB Id          DB Name        Inst Num       Instance       Container Name
+-------------- -------------- -------------- -------------- --------------
+ 3516530670     CDB                        1 cdb           HKXTOR
+
+
+
+Root DB Id      Container DB Id AWR DB Id
+--------------- --------------- ---------------
+    299079762      3516530670      3516530670
+
+
+
+
+
+
+Instances in this Workload Repository schema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using 3516530670 for database Id
+Using          1 for instance number
+declare
+*
+ERROR at line 1:
+ORA-20200: Database/Instance 3516530670/1 does not exist in
+AWR_PDB_DATABASE_INSTANCE
+ORA-06512: at line 27
+
+
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.10.0.0.0
 </code></pre>
-<h1 id="3-如何快速解决锁等待问题">3. 如何快速解决锁等待问题</h1>
-<pre><code class="language-sql">mysql:sys&gt; select * from sys.innodb_lock_waits\G
-*************************** 1. row ***************************
-                wait_started: 2019-06-26 11:49:58
-                    wait_age: 00:00:03
-               wait_age_secs: 3
-                locked_table: `test`.`test_1`
-                locked_index: GEN_CLUST_INDEX
-                 locked_type: RECORD
-              waiting_trx_id: 1592102
-         waiting_trx_started: 2019-06-26 11:49:58
-             waiting_trx_age: 00:00:03
-     waiting_trx_rows_locked: 2
-   waiting_trx_rows_modified: 0
-                 waiting_pid: 3
-               waiting_query: update test_1 set id=4 where id = 1
-             waiting_lock_id: 1592102:32:3:4
-           waiting_lock_mode: X
-             blocking_trx_id: 1592100
-                blocking_pid: 2
-              blocking_query: NULL
-            blocking_lock_id: 1592100:32:3:4
-          blocking_lock_mode: X
-        blocking_trx_started: 2019-06-26 11:49:08
-            blocking_trx_age: 00:00:53
-    blocking_trx_rows_locked: 1
-  blocking_trx_rows_modified: 1
-     sql_kill_blocking_query: KILL QUERY 2
-sql_kill_blocking_connection: KILL 2
-
-MySQL连kill SQL 语句都提供了
-
-通过innodb_lock_waits你只能看到被lock的语句，但是看不到是哪个query语句拥有的锁，如果幸运的话，可以看到上述的案例中 current_statement，last_statement 得到答案。
-即便没有找到那条query，也不妨碍你解决当前的问题哈
+<h1 id="mos">MOS:</h1>
+<p>ORA-20200 Error When Generating AWR or ADDM Report as a PDB DBA User From a 12.2.0.1 and higher CDB Database (Doc ID 2267849.1)<br>
+Bug 25941188 - ORA-20200 WHEN ADDM REPORT GENERATED FROM A PDB DATABASE USING AWR_PDB OPTION &lt;==closed as duplicate to following internal bug that is still being worked on:<br>
+Bug 27747951 : CDB_MA: ADDMRPT.SQL EXECUTION IN PDB LEVEL</p>
+<h1 id="解决办法">解决办法：</h1>
+<pre><code>ALTER SYSTEM SET awr_pdb_autoflush_enabled= TRUE SID='*' SCOPE=BOTH;
+ALTER SYSTEM SET awr_snapshot_time_offset=1000000 SID='*' SCOPE=BOTH;
 </code></pre>
 
                 </div>
@@ -173,14 +206,14 @@ MySQL连kill SQL 语句都提供了
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://hkxtor.github.io/eP0H2Pm3z/" class="post-title gt-a-link">
-                    11.2单机数据库转换为RAC -- 使用rconfig
+                <a href="https://hkxtor.github.io/ihIcEuWzN/" class="post-title gt-a-link">
+                    RushQL勒索病毒的处理
                 </a>
             </div>
         
 
         
-            <span id="/0k4Pjffz5//" class="leancloud_visitors" data-flag-title="Mysql 长事务处理">
+            <span id="/k8frSam77//" class="leancloud_visitors" data-flag-title="19C pdb开启awr以获取数据文件等io信息">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>
